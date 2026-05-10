@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 
 export type Project = {
-  // Lead contact
   fullName: string;
   workEmail: string;
   company: string;
   role: string;
-  // Project context
   name: string;
   stage: string;
   chain: string;
@@ -18,27 +16,43 @@ export type Project = {
 };
 
 const KEY = "ico-copilot-project";
+const EVT = "ico-copilot-project-change";
 const empty: Project = {
   fullName: "", workEmail: "", company: "", role: "",
   name: "", stage: "", chain: "", raiseSize: "",
   audience: "", mission: "", token: "", brand: "",
 };
 
+function read(): Project {
+  if (typeof window === "undefined") return empty;
+  try {
+    const raw = localStorage.getItem(KEY);
+    return raw ? { ...empty, ...JSON.parse(raw) } : empty;
+  } catch { return empty; }
+}
+
 export function useProject() {
   const [project, setProject] = useState<Project>(empty);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) setProject({ ...empty, ...JSON.parse(raw) });
-    } catch {}
+    setProject(read());
     setLoaded(true);
+    const sync = () => setProject(read());
+    window.addEventListener(EVT, sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener(EVT, sync);
+      window.removeEventListener("storage", sync);
+    };
   }, []);
 
   const save = (p: Project) => {
     setProject(p);
-    try { localStorage.setItem(KEY, JSON.stringify(p)); } catch {}
+    try {
+      localStorage.setItem(KEY, JSON.stringify(p));
+      window.dispatchEvent(new Event(EVT));
+    } catch {}
   };
 
   return { project, setProject: save, loaded, isReady: !!project.name && !!project.mission && !!project.workEmail };
