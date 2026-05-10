@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { generateContent } from "@/lib/generate.functions";
 import { useProject } from "@/hooks/use-project";
+import { useCredits } from "@/hooks/use-credits";
+import { TopUpDialog } from "@/components/CreditsBar";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Loader2, PieChart as PieIcon, TrendingUp } from "lucide-react";
+import { Loader2, PieChart as PieIcon, TrendingUp, Coins } from "lucide-react";
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
@@ -21,15 +23,18 @@ const COLORS = ["oklch(0.78 0.18 155)", "oklch(0.7 0.18 285)", "oklch(0.78 0.15 
 export function TokenomicsPanel() {
   const { project, isReady } = useProject();
   const generate = useServerFn(generateContent);
+  const { canAfford, charge, costs, topUp } = useCredits();
   const [data, setData] = useState<Token | null>(null);
   const [loading, setLoading] = useState(false);
+  const [topUpOpen, setTopUpOpen] = useState(false);
 
   const run = async () => {
     if (!isReady) { toast.error("Fill in project setup first"); return; }
+    if (!canAfford("tokenomics")) { toast.error("Out of credits — top up to continue"); setTopUpOpen(true); return; }
     setLoading(true);
     try {
       const res = await generate({ data: { ...project, kind: "tokenomics" } });
-      if ("data" in res && res.kind === "tokenomics") setData(res.data as Token);
+      if ("data" in res && res.kind === "tokenomics") { setData(res.data as Token); charge("tokenomics"); }
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Failed");
     } finally { setLoading(false); }
@@ -47,9 +52,10 @@ export function TokenomicsPanel() {
         </div>
         <Button onClick={run} disabled={loading}>
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <TrendingUp className="h-4 w-4" />}
-          Simulate
+          Simulate <span className="ml-1 inline-flex items-center gap-1 text-[10px] opacity-80"><Coins className="h-3 w-3" />{costs.tokenomics}</span>
         </Button>
       </div>
+      <TopUpDialog open={topUpOpen} onOpenChange={setTopUpOpen} onConfirm={(n) => { topUp(n); setTopUpOpen(false); toast.success(`+${n} credits added`); }} />
 
       {data ? (
         <div className="grid lg:grid-cols-2 gap-6">

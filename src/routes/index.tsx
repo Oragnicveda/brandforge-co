@@ -5,15 +5,16 @@ import { PhaseTracker } from "@/components/PhaseTracker";
 import { TokenomicsPanel } from "@/components/TokenomicsPanel";
 import { GenerateCard } from "@/components/GenerateCard";
 import { SentimentPanel } from "@/components/SentimentPanel";
+import { CreditsBar } from "@/components/CreditsBar";
 import { useProject } from "@/hooks/use-project";
-import { Lock, ShieldCheck, Sparkles } from "lucide-react";
+import { Lock, ShieldCheck, Hexagon } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
   head: () => ({
     meta: [
-      { title: "ICO Co-Pilot — Launch & Branding AI" },
-      { name: "description", content: "Secure AI co-pilot for crypto teams: tokenomics, whitepaper, social threads, pitch decks, and investor outreach." },
+      { title: "Blockzia Labs — ICO Launch & Branding AI Co-Pilot" },
+      { name: "description", content: "Blockzia Labs: secure AI co-pilot for crypto teams. Tokenomics, whitepaper, social threads, pitch decks, and investor outreach." },
     ],
   }),
 });
@@ -30,16 +31,17 @@ function Dashboard() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-lg grid place-items-center" style={{ background: "var(--gradient-violet)" }}>
-              <Sparkles className="h-4 w-4 text-background" />
+              <Hexagon className="h-4 w-4 text-background" strokeWidth={2.5} />
             </div>
             <div>
-              <div className="font-semibold tracking-tight leading-none">ICO Co-Pilot</div>
+              <div className="font-semibold tracking-tight leading-none">Blockzia Labs</div>
               <div className="text-[11px] uppercase tracking-wider text-muted-foreground mt-0.5">Launch · Brand · Comply</div>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="chip"><Lock className="h-3 w-3" /> Private workspace</span>
-            <span className="chip chip-primary"><ShieldCheck className="h-3 w-3" /> SOC-ready</span>
+            <CreditsBar />
+            <span className="chip hidden sm:inline-flex"><Lock className="h-3 w-3" /> Private</span>
+            <span className="chip chip-primary hidden md:inline-flex"><ShieldCheck className="h-3 w-3" /> SOC-ready</span>
           </div>
         </div>
       </header>
