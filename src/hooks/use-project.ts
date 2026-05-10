@@ -1,15 +1,28 @@
 import { useEffect, useState } from "react";
 
 export type Project = {
+  // Lead contact
+  fullName: string;
+  workEmail: string;
+  company: string;
+  role: string;
+  // Project context
   name: string;
-  mission: string;
+  stage: string;
+  chain: string;
+  raiseSize: string;
   audience: string;
+  mission: string;
   token: string;
   brand: string;
 };
 
 const KEY = "ico-copilot-project";
-const empty: Project = { name: "", mission: "", audience: "", token: "", brand: "" };
+const empty: Project = {
+  fullName: "", workEmail: "", company: "", role: "",
+  name: "", stage: "", chain: "", raiseSize: "",
+  audience: "", mission: "", token: "", brand: "",
+};
 
 export function useProject() {
   const [project, setProject] = useState<Project>(empty);
@@ -28,5 +41,5 @@ export function useProject() {
     try { localStorage.setItem(KEY, JSON.stringify(p)); } catch {}
   };
 
-  return { project, setProject: save, loaded, isReady: !!project.name && !!project.mission };
+  return { project, setProject: save, loaded, isReady: !!project.name && !!project.mission && !!project.workEmail };
 }
