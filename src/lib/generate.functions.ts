@@ -36,12 +36,12 @@ export const generateContent = createServerFn({ method: "POST" })
         model,
         output: Output.object({
           schema: z.object({
-            allocations: z.array(z.object({ category: z.string(), percent: z.number(), vestingMonths: z.number() })).min(3).max(10),
-            emissions: z.array(z.object({ month: z.number(), circulating: z.number() })).min(6).max(36),
+            allocations: z.array(z.object({ category: z.string(), percent: z.number(), vestingMonths: z.number() })),
+            emissions: z.array(z.object({ month: z.number(), circulating: z.number() })),
             summary: z.string(),
           }),
         }),
-        prompt: `${ctx}\n\nDesign a realistic tokenomics model. Output allocations (percentages summing ~100), a 24-month emission schedule (circulating supply in millions), and a short strategist summary.`,
+        prompt: `${ctx}\n\nDesign a realistic tokenomics model. Return STRICT JSON with:\n- "allocations": array of 5-7 objects, each {category: string, percent: number 0-100, vestingMonths: integer}. Percentages must sum to 100.\n- "emissions": array of exactly 24 objects, each {month: integer 1-24, circulating: number in millions}.\n- "summary": 2-3 sentence strategist note.\nReturn only the JSON object, no prose.`,
       });
       return { kind: "tokenomics" as const, data: output };
     }
