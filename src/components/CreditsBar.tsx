@@ -7,11 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Coins, Copy, Wallet, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
-// Receiving wallet addresses — replace with your real addresses.
+// Receiving wallet addresses (EVM: Ethereum, Base, Arbitrum, Polygon, BNB Chain).
 const WALLETS = [
-  { chain: "Ethereum / Base / Arbitrum (USDC, ETH)", address: "0xYOUR_ETH_ADDRESS_HERE" },
-  { chain: "Solana (USDC, SOL)", address: "YOUR_SOLANA_ADDRESS_HERE" },
-  { chain: "Bitcoin", address: "bc1YOUR_BTC_ADDRESS_HERE" },
+  { chain: "MetaMask (ETH / USDC / USDT — EVM)", address: "0x7C03851b9E2D0C6450D257a7D16A50226C9e34A4" },
+  { chain: "Coinbase Wallet (ETH / USDC / USDT — EVM)", address: "0x2DfAC373b690e694C5f0eA632025fe269d967758" },
+  { chain: "Trust Wallet (ETH / USDC / USDT — EVM)", address: "0xE0d9965CC22D071190Cd191A66f9a020ACc66E5e" },
 ];
 
 const PACKS = [
