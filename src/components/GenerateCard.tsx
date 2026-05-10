@@ -2,13 +2,15 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { generateContent } from "@/lib/generate.functions";
 import { useProject } from "@/hooks/use-project";
+import { useCredits, type CreditKind } from "@/hooks/use-credits";
+import { TopUpDialog } from "@/components/CreditsBar";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import jsPDF from "jspdf";
-import { Download, Loader2, Sparkles, FileText, Copy } from "lucide-react";
+import { Download, Loader2, Sparkles, FileText, Copy, Coins } from "lucide-react";
 
-type Kind = "whitepaper" | "social" | "deck" | "emails" | "calendar";
+type Kind = Exclude<CreditKind, "tokenomics">;
 
 const meta: Record<Kind, { title: string; desc: string; cta: string }> = {
   whitepaper: { title: "Whitepaper", desc: "Comprehensive ICO whitepaper with tokenomics, roadmap & legal disclaimer.", cta: "Generate whitepaper" },
@@ -21,15 +23,19 @@ const meta: Record<Kind, { title: string; desc: string; cta: string }> = {
 export function GenerateCard({ kind }: { kind: Kind }) {
   const { project, isReady } = useProject();
   const generate = useServerFn(generateContent);
+  const { canAfford, charge, costs, topUp } = useCredits();
   const [text, setText] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [topUpOpen, setTopUpOpen] = useState(false);
+  const cost = costs[kind];
 
   const run = async () => {
     if (!isReady) { toast.error("Fill in project setup first"); return; }
+    if (!canAfford(kind)) { toast.error(`Needs ${cost} credits — top up to continue`); setTopUpOpen(true); return; }
     setLoading(true);
     try {
       const res = await generate({ data: { ...project, kind } });
-      if ("text" in res && res.text) setText(res.text);
+      if ("text" in res && res.text) { setText(res.text); charge(kind); }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Generation failed";
       toast.error(msg);
@@ -77,9 +83,10 @@ export function GenerateCard({ kind }: { kind: Kind }) {
         </div>
         <Button onClick={run} disabled={loading} variant="default" className="shrink-0">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-          {m.cta}
+          {m.cta} <span className="ml-1 inline-flex items-center gap-1 text-[10px] opacity-80"><Coins className="h-3 w-3" />{cost}</span>
         </Button>
       </div>
+      <TopUpDialog open={topUpOpen} onOpenChange={setTopUpOpen} onConfirm={(n) => { topUp(n); setTopUpOpen(false); toast.success(`+${n} credits added`); }} />
 
       {text && (
         <>
