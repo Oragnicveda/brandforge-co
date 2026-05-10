@@ -7,8 +7,9 @@ import { TopUpDialog } from "@/components/CreditsBar";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import jsPDF from "jspdf";
-import { Download, Loader2, Sparkles, FileText, Copy, Coins } from "lucide-react";
+import { Download, Loader2, Sparkles, FileText, Copy, Coins, Lock } from "lucide-react";
 
 type Kind = Exclude<CreditKind, "tokenomics">;
 
