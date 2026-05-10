@@ -7,8 +7,9 @@ import { TopUpDialog } from "@/components/CreditsBar";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import jsPDF from "jspdf";
-import { Download, Loader2, Sparkles, FileText, Copy, Coins } from "lucide-react";
+import { Download, Loader2, Sparkles, FileText, Copy, Coins, Lock } from "lucide-react";
 
 type Kind = Exclude<CreditKind, "tokenomics">;
 
@@ -23,7 +24,7 @@ const meta: Record<Kind, { title: string; desc: string; cta: string }> = {
 export function GenerateCard({ kind }: { kind: Kind }) {
   const { project, isReady } = useProject();
   const generate = useServerFn(generateContent);
-  const { canAfford, charge, costs, topUp } = useCredits();
+  const { canAfford, charge, costs, topUp, isPaid } = useCredits();
   const [text, setText] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [topUpOpen, setTopUpOpen] = useState(false);
@@ -90,19 +91,38 @@ export function GenerateCard({ kind }: { kind: Kind }) {
 
       {text && (
         <>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 items-center">
             <Button size="sm" variant="secondary" onClick={copy}><Copy className="h-3.5 w-3.5" /> Copy</Button>
-            <Button size="sm" variant="secondary" onClick={exportMd}><Download className="h-3.5 w-3.5" /> Markdown</Button>
-            <Button size="sm" variant="secondary" onClick={exportPdf}><Download className="h-3.5 w-3.5" /> PDF</Button>
-            <Button size="sm" variant="ghost" onClick={() => { window.open(`https://www.notion.so/`, "_blank"); navigator.clipboard.writeText(text); toast.success("Copied — paste into Notion"); }}>
-              Notion
-            </Button>
+            {isPaid ? (
+              <>
+                <Button size="sm" variant="secondary" onClick={exportMd}><Download className="h-3.5 w-3.5" /> Markdown</Button>
+                <Button size="sm" variant="secondary" onClick={exportPdf}><Download className="h-3.5 w-3.5" /> PDF</Button>
+              </>
+            ) : (
+              <Button size="sm" variant="default" onClick={() => setTopUpOpen(true)}>
+                <Lock className="h-3.5 w-3.5" /> Unlock downloads
+              </Button>
+            )}
             <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText(text); toast.success("Copied — paste into Slack"); }}>
               Slack
             </Button>
+            {!isPaid && <span className="text-[11px] text-muted-foreground ml-auto">Top up to export PDF / Markdown</span>}
           </div>
-          <div className="prose prose-invert prose-sm max-w-none rounded-lg border border-border bg-background/40 p-5 max-h-[480px] overflow-auto">
-            <ReactMarkdown>{text}</ReactMarkdown>
+          <div className="prose prose-invert prose-sm max-w-none rounded-lg border border-border bg-background/40 p-6 max-h-[520px] overflow-auto
+            prose-headings:tracking-tight prose-headings:text-foreground
+            prose-h1:text-2xl prose-h1:mt-0 prose-h1:mb-4 prose-h1:border-b prose-h1:border-border prose-h1:pb-2
+            prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-3
+            prose-h3:text-base prose-h3:mt-5 prose-h3:mb-2 prose-h3:text-primary
+            prose-p:leading-relaxed prose-p:text-foreground/90
+            prose-strong:text-foreground prose-strong:font-semibold
+            prose-ul:my-3 prose-ol:my-3 prose-li:my-1 prose-li:text-foreground/90
+            prose-table:text-xs prose-table:border prose-table:border-border
+            prose-th:bg-muted/40 prose-th:text-foreground prose-th:px-3 prose-th:py-2 prose-th:text-left
+            prose-td:px-3 prose-td:py-2 prose-td:border-t prose-td:border-border
+            prose-code:text-primary prose-code:bg-muted/40 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+            prose-blockquote:border-l-primary prose-blockquote:text-muted-foreground prose-blockquote:not-italic
+            prose-hr:border-border">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
           </div>
         </>
       )}
