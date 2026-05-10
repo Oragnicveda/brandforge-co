@@ -16,7 +16,7 @@ const projectSchema = z.object({
 function getModel() {
   const key = process.env.LOVABLE_API_KEY;
   if (!key) throw new Error("Missing LOVABLE_API_KEY");
-  return createLovableAiGatewayProvider(key)("google/gemini-3-flash-preview");
+  return createLovableAiGatewayProvider(key)("google/gemini-2.5-pro");
 }
 
 const brandPreamble = (b: string) =>
