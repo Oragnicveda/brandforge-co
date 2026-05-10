@@ -24,7 +24,7 @@ const meta: Record<Kind, { title: string; desc: string; cta: string }> = {
 export function GenerateCard({ kind }: { kind: Kind }) {
   const { project, isReady } = useProject();
   const generate = useServerFn(generateContent);
-  const { canAfford, charge, costs, topUp } = useCredits();
+  const { canAfford, charge, costs, topUp, isPaid } = useCredits();
   const [text, setText] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [topUpOpen, setTopUpOpen] = useState(false);
