@@ -12,6 +12,7 @@ export type Project = {
   audience: string;
   mission: string;
   token: string;
+  maxSupply: string;
   brand: string;
 };
 
@@ -20,7 +21,7 @@ const EVT = "ico-copilot-project-change";
 const empty: Project = {
   fullName: "", workEmail: "", company: "", role: "",
   name: "", stage: "", chain: "", raiseSize: "",
-  audience: "", mission: "", token: "", brand: "",
+  audience: "", mission: "", token: "", maxSupply: "", brand: "",
 };
 
 function read(): Project {

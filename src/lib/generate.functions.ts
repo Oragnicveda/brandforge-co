@@ -8,6 +8,7 @@ const projectSchema = z.object({
   mission: z.string().min(1).max(2000),
   audience: z.string().min(1).max(500),
   token: z.string().min(1).max(1000),
+  maxSupply: z.string().max(200).optional().default(""),
   brand: z.string().max(3000).optional().default(""),
   kind: z.enum(["whitepaper", "social", "deck", "emails", "tokenomics", "calendar", "sentiment"]),
   extra: z.string().max(2000).optional().default(""),
@@ -23,7 +24,7 @@ const brandPreamble = (b: string) =>
   b ? `\n\nBRAND VOICE GUIDELINES (must be followed strictly):\n${b}\n` : "";
 
 const projectContext = (d: z.infer<typeof projectSchema>) =>
-  `PROJECT: ${d.name}\nMISSION: ${d.mission}\nAUDIENCE: ${d.audience}\nTOKEN DETAILS: ${d.token}${brandPreamble(d.brand)}`;
+  `PROJECT: ${d.name}\nMISSION: ${d.mission}\nAUDIENCE: ${d.audience}\nTOKEN DETAILS: ${d.token}${d.maxSupply ? `\nMAX SUPPLY: ${d.maxSupply} (use this exact figure throughout tokenomics, allocations, and emissions — do not invent a different total)` : ""}${brandPreamble(d.brand)}`;
 
 export const generateContent = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => projectSchema.parse(input))

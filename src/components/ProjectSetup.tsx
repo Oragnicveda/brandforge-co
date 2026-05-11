@@ -79,6 +79,9 @@ export function ProjectSetup() {
             <Field label="Token symbol & utility">
               <Input value={draft.token} onChange={(e) => update("token", e.target.value)} placeholder="$HLX — governance + fee share" className="bg-background/50" />
             </Field>
+            <Field label="Max token supply">
+              <Input value={draft.maxSupply} onChange={(e) => update("maxSupply", e.target.value)} placeholder="1,000,000,000 HLX" className="bg-background/50" />
+            </Field>
             <div className="md:col-span-2">
               <Field label="Mission statement" required>
                 <Textarea value={draft.mission} onChange={(e) => update("mission", e.target.value)} placeholder="What problem are you solving and for whom?" className="bg-background/50 min-h-[88px]" />
