@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { generateContent } from "@/lib/generate.functions";
 import { useProject } from "@/hooks/use-project";
 import { useCredits, type CreditKind } from "@/hooks/use-credits";
+import { formatCooldown } from "@/hooks/use-credits";
 import { TopUpDialog } from "@/components/CreditsBar";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
