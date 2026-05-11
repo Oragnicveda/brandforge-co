@@ -180,20 +180,40 @@ Markdown table \`| Firm / Archetype | Stage focus | Thesis fit | Why ${data.name
 
       calendar: `${ctx}${formatRules}
 
-Produce a 30-day community engagement calendar for ${data.name} targeting ${data.audience}.
+Produce a 7-DAY (one-week) launch-week community engagement calendar for ${data.name} targeting ${data.audience} on ${data.chain || "its chain"}. Every row must be crypto-native, deeply tailored to ${data.name}'s mission, token (${data.token}), and audience — NO generic marketing filler ("engage with community", "post a meme", "share update").
 
-Return ONE Markdown table with these columns and EXACTLY 30 rows:
+\`# ${data.name} — Launch Week Calendar (7 Days)\`
 
-\`| Day | Date Offset | Channel | Content Type | Topic | Copy Hook | CTA |\`
+Return ONE Markdown table with these columns and EXACTLY 7 rows:
 
-- Day = 1..30
-- Date Offset = D+1 .. D+30 from launch
-- Channel cycles through X, Telegram, Discord, LinkedIn, Reddit, Medium (mix at least 5)
-- Content Type cycles through AMA, meme, thread, partnership, dev update, governance vote, tutorial
-- Topic / Copy Hook MUST mention ${data.name}, ${data.token}, ${data.chain || "the chain"}, or the audience — never generic
-- CTA is a concrete verb + link placeholder
+\`| Day | Channel | Content Type | Crypto-Native Topic | Copy Hook (≤200 chars) | CTA | Authentic Link |\`
 
-Finish with a 2-sentence summary BELOW the table describing the narrative arc across the 30 days.`,
+Strict rules:
+- Day = 1..7 (Mon → Sun of launch week)
+- Channel: pick the BEST single channel per day from { X (Twitter), Telegram, Discord, Farcaster, Medium/Mirror, Galxe, CoinGecko/CoinMarketCap, DexScreener } — do NOT just rotate; match channel to content.
+- Content Type: pick crypto-native formats: Spaces AMA, on-chain proof post, liquidity-pool announcement, audit report drop, governance proposal, KOL co-tweet, points/quest campaign, listing announcement, dev changelog, tokenomics deep-dive, holder airdrop snapshot reminder.
+- Crypto-Native Topic MUST reference ${data.name}, the ${data.token} utility, ${data.chain || "chain"} specifics (gas, bridges, DEXs available there), ${data.maxSupply ? `the ${data.maxSupply} supply cap, ` : ""}and what ${data.audience} actually cares about (yield, points, governance, alpha).
+- Copy Hook = the actual post text a community manager would publish. Include real-sounding numbers, on-chain references, or mechanics — not "join us today!".
+- CTA = concrete verb + measurable action (e.g. "Bridge USDC via Across to ${data.chain || "chain"}", "Stake ${data.token} for week-1 multiplier", "Vote on Snapshot proposal #1").
+- Authentic Link = a REAL working URL on the canonical domain for that tool/channel, parameterised with ${data.name} where natural. Examples of acceptable real domains:
+  - https://x.com/search?q=%24${data.token}
+  - https://app.uniswap.org/swap?chain=${(data.chain || "ethereum").toLowerCase()}
+  - https://dexscreener.com/${(data.chain || "ethereum").toLowerCase()}
+  - https://www.coingecko.com/en/coins/${data.name.toLowerCase().replace(/\s+/g, "-")}
+  - https://snapshot.org/#/${data.name.toLowerCase().replace(/\s+/g, "-")}.eth
+  - https://galxe.com/${data.name.replace(/\s+/g, "")}
+  - https://warpcast.com/~/channel/${data.name.toLowerCase().replace(/\s+/g, "-")}
+  - https://mirror.xyz/${data.name.toLowerCase().replace(/\s+/g, "")}.eth
+  - https://debank.com/ , https://defillama.com/protocol/${data.name.toLowerCase().replace(/\s+/g, "-")}
+  Use the correct domain for the chain (e.g. basescan.org for Base, arbiscan.io for Arbitrum, etherscan.io for Ethereum, solscan.io for Solana). NEVER invent a domain. NEVER use example.com or {{placeholder}}.
+
+Below the table add:
+
+\`## Week Narrative Arc\`
+3 sentences explaining how Days 1→7 escalate (awareness → proof → conversion) for ${data.name} specifically.
+
+\`## Asset Checklist\`
+Bullet list of the exact assets the team must prep before Monday (graphics dimensions, AMA host, audit PDF link target, contract address placeholder, etc.) — tailored to ${data.name}'s stage (${data.stage || "launch"}).`,
     };
 
 
