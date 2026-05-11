@@ -79,16 +79,16 @@ export function GenerateCard({ kind }: { kind: Kind }) {
   const m = meta[kind];
 
   return (
-    <div className="panel p-6 flex flex-col gap-4">
-      <div className="flex items-start justify-between gap-4">
-        <div>
+    <div className="panel p-6 flex flex-col gap-4 min-w-0">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="min-w-0">
           <div className="flex items-center gap-2">
             <FileText className="h-4 w-4 text-primary" />
             <h3 className="text-lg font-semibold tracking-tight">{m.title}</h3>
           </div>
           <p className="text-sm text-muted-foreground mt-1 max-w-prose">{m.desc}</p>
         </div>
-        <Button onClick={run} disabled={loading} variant="default" className="shrink-0">
+        <Button onClick={run} disabled={loading} variant="default" className="shrink-0 w-full sm:w-auto">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
           {m.cta} <span className="ml-1 inline-flex items-center gap-1 text-[10px] opacity-80"><Coins className="h-3 w-3" />{cost}</span>
         </Button>
