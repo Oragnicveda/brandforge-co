@@ -7,7 +7,8 @@ import { GenerateCard } from "@/components/GenerateCard";
 import { SentimentPanel } from "@/components/SentimentPanel";
 import { CreditsBar } from "@/components/CreditsBar";
 import { useProject } from "@/hooks/use-project";
-import { Lock, ShieldCheck, Hexagon } from "lucide-react";
+import { Lock, ShieldCheck, Hexagon, CalendarCheck, ArrowUpRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
