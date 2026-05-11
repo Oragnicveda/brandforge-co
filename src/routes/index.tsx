@@ -48,7 +48,7 @@ function Dashboard() {
       </header>
 
       <main className="relative max-w-7xl mx-auto px-6 py-10 space-y-8">
-        <section className="space-y-3">
+        <section className="space-y-4">
           <span className="chip chip-primary">2026 · AI Co-Pilot</span>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight max-w-3xl">
             Launch your token without a 30-person growth team.
@@ -57,6 +57,18 @@ function Dashboard() {
             One brand context — every asset on tap. Tokenomics simulations, whitepapers, threads,
             decks, and investor outreach, generated in seconds and kept on-brand.
           </p>
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Button asChild variant="default">
+              <a href="https://cal.com/blockzia-kher-group/60min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
+                <CalendarCheck className="h-4 w-4" /> Consult an expert
+              </a>
+            </Button>
+            <Button asChild variant="secondary">
+              <a href="https://blockzia.marketing/" target="_blank" rel="noopener noreferrer">
+                Learn more <ArrowUpRight className="h-4 w-4" />
+              </a>
+            </Button>
+          </div>
         </section>
 
         <PhaseTracker done={{
