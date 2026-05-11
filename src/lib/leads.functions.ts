@@ -76,7 +76,7 @@ export const submitLead = createServerFn({ method: "POST" })
     if (!res.ok) {
       const text = await res.text();
       console.error("Resend error", res.status, text);
-      throw new Error(`Email send failed (${res.status})`);
+      throw new Error(`Email send failed (${res.status}): ${text}`);
     }
 
     return { ok: true };
