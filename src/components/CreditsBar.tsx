@@ -86,6 +86,7 @@ export function TopUpDialog({
   const [pack, setPack] = useState(PACKS[1]);
   const [paying, setPaying] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
+  const [scan, setScan] = useState<null | "metamask" | "coinbase" | "trust">(null);
 
   const pay = async (kind: "metamask" | "coinbase" | "trust") => {
     const provider = pickProvider(kind);
@@ -154,23 +155,49 @@ export function TopUpDialog({
             <div className="grid gap-2">
               {WALLETS.map((w) => {
                 const busy = paying === w.id;
+                const installed = !!pickProvider(w.id);
                 return (
-                  <Button
-                    key={w.id}
-                    variant="secondary"
-                    className="justify-between h-auto py-3"
-                    disabled={!!paying}
-                    onClick={() => pay(w.id)}
-                  >
-                    <span className="flex flex-col items-start">
-                      <span className="text-sm font-semibold">{w.name}</span>
-                      <span className="text-xs text-muted-foreground">{w.hint}</span>
-                    </span>
-                    {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wallet className="h-4 w-4" />}
-                  </Button>
+                  <div key={w.id} className="rounded-lg border border-border bg-background/40 p-2 flex items-center gap-2">
+                    <button
+                      disabled={!!paying}
+                      onClick={() => pay(w.id)}
+                      className="flex-1 flex items-center justify-between text-left px-2 py-1 disabled:opacity-50"
+                    >
+                      <span className="flex flex-col items-start">
+                        <span className="text-sm font-semibold">{w.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {installed ? "Detected — pay in one click" : "Not detected — scan QR or install"}
+                        </span>
+                      </span>
+                      {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wallet className="h-4 w-4" />}
+                    </button>
+                    <Button size="sm" variant="ghost" onClick={() => setScan(scan === w.id ? null : w.id)} title="Scan with mobile">
+                      <QrCode className="h-4 w-4" />
+                    </Button>
+                    {!installed && (
+                      <a href={w.install} target="_blank" rel="noreferrer" className="text-xs text-primary inline-flex items-center gap-1 pr-2">
+                        <Download className="h-3 w-3" /> Install
+                      </a>
+                    )}
+                  </div>
                 );
               })}
             </div>
+
+            {scan && (
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 flex flex-col items-center gap-2">
+                <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                  Scan with {WALLETS.find((w) => w.id === scan)?.name} mobile
+                </div>
+                <div className="rounded-md bg-white p-3">
+                  <QRCodeSVG value={buildDeeplink(scan, pack.eth)} size={168} level="M" />
+                </div>
+                <div className="text-[11px] text-muted-foreground text-center max-w-xs">
+                  Opens the wallet pre-filled with {pack.eth} ETH to the receiver. Confirm in-app to unlock {pack.credits} credits.
+                </div>
+              </div>
+            )}
+
             <p className="text-[11px] text-muted-foreground">
               Sends to receiver on whichever EVM network your wallet is currently on (Ethereum, Base, Arbitrum, Polygon, BNB).
             </p>
