@@ -22,9 +22,14 @@ const projectSchema = z.object({
 });
 
 function getModel() {
-  const key = process.env.LOVABLE_API_KEY;
-  if (!key) throw new Error("Missing LOVABLE_API_KEY");
-  return createLovableAiGatewayProvider(key)("google/gemini-2.5-pro");
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("Missing GEMINI_API_KEY");
+  const gemini = createOpenAICompatible({
+    name: "gemini",
+    baseURL: "https://generativelanguage.googleapis.com/v1beta/openai",
+    headers: { Authorization: `Bearer ${key}` },
+  });
+  return gemini("gemini-2.5-pro");
 }
 
 const brandPreamble = (b: string) =>
