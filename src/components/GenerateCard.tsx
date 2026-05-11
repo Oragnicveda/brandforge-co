@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { generateContent } from "@/lib/generate.functions";
 import { useProject } from "@/hooks/use-project";
 import { useCredits, type CreditKind } from "@/hooks/use-credits";
+import { formatCooldown } from "@/hooks/use-credits";
 import { TopUpDialog } from "@/components/CreditsBar";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,7 @@ const meta: Record<Kind, { title: string; desc: string; cta: string }> = {
 export function GenerateCard({ kind }: { kind: Kind }) {
   const { project, isReady } = useProject();
   const generate = useServerFn(generateContent);
-  const { canAfford, charge, costs, topUp, isPaid } = useCredits();
+  const { canAfford, charge, costs, topUp, isPaid, onCooldown, msUntilFree } = useCredits();
   const [text, setText] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [topUpOpen, setTopUpOpen] = useState(false);
@@ -32,7 +33,12 @@ export function GenerateCard({ kind }: { kind: Kind }) {
 
   const run = async () => {
     if (!isReady) { toast.error("Fill in project setup first"); return; }
-    if (!canAfford(kind)) { toast.error(`Needs ${cost} credits — top up to continue`); setTopUpOpen(true); return; }
+    if (!canAfford(kind)) {
+      if (onCooldown) toast.error(`Free credits refill in ${formatCooldown(msUntilFree)} — or top up to continue now`);
+      else toast.error(`Needs ${cost} credits — top up to continue`);
+      setTopUpOpen(true);
+      return;
+    }
     setLoading(true);
     try {
       const res = await generate({ data: { ...project, kind } });

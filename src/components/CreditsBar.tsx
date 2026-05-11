@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { useCredits, FREE_CREDITS } from "@/hooks/use-credits";
+import { useCredits, FREE_CREDITS, formatCooldown } from "@/hooks/use-credits";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -61,15 +61,19 @@ function buildDeeplink(kind: "metamask" | "coinbase" | "trust", eth: string): st
 }
 
 export function CreditsBar() {
-  const { credits, topUp } = useCredits();
+  const { credits, topUp, onCooldown, msUntilFree } = useCredits();
   const [open, setOpen] = useState(false);
   const low = credits <= 1;
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className={`chip ${low ? "chip-primary" : ""}`} title="Click to top up">
+      <button
+        onClick={() => setOpen(true)}
+        className={`chip ${low ? "chip-primary" : ""}`}
+        title={onCooldown ? `Free credits refill in ${formatCooldown(msUntilFree)} — or top up now` : "Click to top up"}
+      >
         <Coins className="h-3 w-3" />
-        {credits}/{FREE_CREDITS}+ credits
+        {onCooldown ? `0/${FREE_CREDITS} · free in ${formatCooldown(msUntilFree)}` : `${credits}/${FREE_CREDITS}+ credits`}
       </button>
       <TopUpDialog open={open} onOpenChange={setOpen} onConfirm={(n) => { topUp(n); toast.success(`+${n} credits added`); setOpen(false); }} />
     </>
