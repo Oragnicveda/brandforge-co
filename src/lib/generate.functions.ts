@@ -29,7 +29,7 @@ function getModel() {
     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai",
     headers: { Authorization: `Bearer ${key}` },
   });
-  return gemini("gemini-2.5-pro");
+  return gemini("gemini-2.5-flash");
 }
 
 const brandPreamble = (b: string) =>
