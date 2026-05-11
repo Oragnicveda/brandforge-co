@@ -29,17 +29,17 @@ function Dashboard() {
       <Toaster theme="dark" position="top-right" />
 
       <header className="relative border-b border-border/60 backdrop-blur-md bg-background/60 sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-lg grid place-items-center" style={{ background: "var(--gradient-violet)" }}>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 min-h-16 py-2 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="h-8 w-8 shrink-0 rounded-lg grid place-items-center" style={{ background: "var(--gradient-violet)" }}>
               <Hexagon className="h-4 w-4 text-background" strokeWidth={2.5} />
             </div>
-            <div>
-              <div className="font-semibold tracking-tight leading-none">Blockzia Labs</div>
-              <div className="text-[11px] uppercase tracking-wider text-muted-foreground mt-0.5">Launch · Brand · Comply</div>
+            <div className="min-w-0">
+              <div className="font-semibold tracking-tight leading-none truncate">Blockzia Labs</div>
+              <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-muted-foreground mt-0.5 truncate">Launch · Brand · Comply</div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <CreditsBar />
             <span className="chip hidden sm:inline-flex"><Lock className="h-3 w-3" /> Private</span>
             <span className="chip chip-primary hidden md:inline-flex"><ShieldCheck className="h-3 w-3" /> SOC-ready</span>
