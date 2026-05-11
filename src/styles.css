@@ -77,7 +77,7 @@
 
 @layer base {
   * { border-color: var(--color-border); }
-  html, body { background-color: var(--color-background); color: var(--color-foreground); overflow-x: hidden; max-width: 100%; }
+  html, body { background-color: var(--color-background); color: var(--color-foreground); overflow-x: clip; max-width: 100%; margin: 0; }
   body {
     font-family: var(--font-display);
     background-image:
