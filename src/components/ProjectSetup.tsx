@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { Send, UserPlus } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { submitLead } from "@/lib/leads.functions";
 
 const ROLES = ["Founder / CEO", "CMO / Head of Marketing", "Community Lead", "Legal / Compliance", "Investor Relations", "Other"];
 const STAGES = ["Pre-seed / Idea", "Private sale", "Public sale / IDO prep", "Post-launch growth"];
@@ -20,13 +22,38 @@ export function ProjectSetup() {
   useEffect(() => { if (loaded) setDraft(project); }, [loaded, project]);
 
   const update = <K extends keyof Project>(k: K, v: Project[K]) => setDraft((d) => ({ ...d, [k]: v }));
+  const sendLead = useServerFn(submitLead);
+  const [submitting, setSubmitting] = useState(false);
 
-  const submit = () => {
+  const submit = async () => {
     if (!draft.fullName || !draft.workEmail) return toast.error("Name and work email required");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.workEmail)) return toast.error("Enter a valid work email");
     if (!draft.name || !draft.mission) return toast.error("Project name and mission required");
-    setProject(draft);
-    toast.success("Lead captured — co-pilot is ready");
+    setSubmitting(true);
+    try {
+      await sendLead({ data: {
+        fullName: draft.fullName,
+        workEmail: draft.workEmail,
+        company: draft.company || "",
+        role: draft.role || "",
+        name: draft.name,
+        stage: draft.stage || "",
+        chain: draft.chain || "",
+        raiseSize: draft.raiseSize || "",
+        audience: draft.audience || "",
+        token: draft.token || "",
+        maxSupply: draft.maxSupply || "",
+        mission: draft.mission,
+        brand: draft.brand || "",
+      }});
+      setProject(draft);
+      toast.success("Lead captured — co-pilot is ready");
+    } catch (e) {
+      console.error(e);
+      toast.error("Could not send lead. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -98,7 +125,7 @@ export function ProjectSetup() {
 
       <div className="mt-6 flex items-center justify-between gap-4">
         <p className="text-xs text-muted-foreground">By submitting you agree to our private workspace terms. Data is encrypted in transit.</p>
-        <Button onClick={submit} className="shrink-0"><Send className="h-4 w-4" /> Submit & activate</Button>
+        <Button onClick={submit} disabled={submitting} className="shrink-0"><Send className="h-4 w-4" /> {submitting ? "Sending…" : "Submit & activate"}</Button>
       </div>
     </div>
   );
