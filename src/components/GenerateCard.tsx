@@ -18,7 +18,7 @@ const meta: Record<Kind, { title: string; desc: string; cta: string }> = {
   social: { title: "Social Threads", desc: "On-brand X thread, Telegram announcement & Discord post.", cta: "Generate threads" },
   deck: { title: "Pitch Deck", desc: "10-slide investor deck with copy + image prompts.", cta: "Generate deck" },
   emails: { title: "Investor Outreach", desc: "Cold email, follow-up & a curated VC target list.", cta: "Generate outreach" },
-  calendar: { title: "30-Day Calendar", desc: "Daily community engagement plan across channels.", cta: "Generate calendar" },
+  calendar: { title: "Launch Week Calendar", desc: "7-day crypto-native launch plan with real channel links, on-chain CTAs & asset checklist.", cta: "Generate week plan" },
 };
 
 export function GenerateCard({ kind }: { kind: Kind }) {
