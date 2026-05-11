@@ -10,43 +10,33 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiPublicTestLeadEmailRouteImport } from './routes/api/public/test-lead-email'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicTestLeadEmailRoute = ApiPublicTestLeadEmailRouteImport.update({
-  id: '/api/public/test-lead-email',
-  path: '/api/public/test-lead-email',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/api/public/test-lead-email': typeof ApiPublicTestLeadEmailRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/api/public/test-lead-email': typeof ApiPublicTestLeadEmailRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/api/public/test-lead-email': typeof ApiPublicTestLeadEmailRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/public/test-lead-email'
+  fullPaths: '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/public/test-lead-email'
-  id: '__root__' | '/' | '/api/public/test-lead-email'
+  to: '/'
+  id: '__root__' | '/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ApiPublicTestLeadEmailRoute: typeof ApiPublicTestLeadEmailRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,20 +48,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/test-lead-email': {
-      id: '/api/public/test-lead-email'
-      path: '/api/public/test-lead-email'
-      fullPath: '/api/public/test-lead-email'
-      preLoaderRoute: typeof ApiPublicTestLeadEmailRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ApiPublicTestLeadEmailRoute: ApiPublicTestLeadEmailRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
