@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
 import { useCredits, FREE_CREDITS } from "@/hooks/use-credits";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Coins, Wallet, CheckCircle2, Loader2, ExternalLink } from "lucide-react";
+import { Coins, Wallet, CheckCircle2, Loader2, ExternalLink, QrCode, Download } from "lucide-react";
 import { toast } from "sonner";
 
 // Receiving wallet (EVM — works for ETH on Ethereum, Base, Arbitrum, Polygon, BNB).
@@ -47,11 +48,17 @@ function ethToWeiHex(eth: string): string {
   return "0x" + wei.toString(16);
 }
 
-const WALLETS: { id: "metamask" | "coinbase" | "trust"; name: string; hint: string }[] = [
-  { id: "metamask", name: "MetaMask",         hint: "Browser extension or mobile" },
-  { id: "coinbase", name: "Coinbase Wallet",  hint: "Coinbase Wallet extension" },
-  { id: "trust",    name: "Trust Wallet",     hint: "Trust browser/mobile" },
+const WALLETS: { id: "metamask" | "coinbase" | "trust"; name: string; hint: string; install: string }[] = [
+  { id: "metamask", name: "MetaMask",         hint: "Browser extension or mobile", install: "https://metamask.io/download/" },
+  { id: "coinbase", name: "Coinbase Wallet",  hint: "Coinbase Wallet extension",   install: "https://www.coinbase.com/wallet/downloads" },
+  { id: "trust",    name: "Trust Wallet",     hint: "Trust browser/mobile",        install: "https://trustwallet.com/download" },
 ];
+
+function buildDeeplink(kind: "metamask" | "coinbase" | "trust", eth: string): string {
+  if (kind === "metamask") return `https://metamask.app.link/send/${RECEIVER}@1?value=${ethToWeiHex(eth)}`;
+  if (kind === "trust")    return `https://link.trustwallet.com/send?asset=c60&address=${RECEIVER}&amount=${eth}`;
+  return `https://go.cb-w.com/dapp?cb_url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`;
+}
 
 export function CreditsBar() {
   const { credits, topUp } = useCredits();
