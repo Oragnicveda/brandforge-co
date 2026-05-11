@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { useCredits, FREE_CREDITS } from "@/hooks/use-credits";
+import { useCredits, FREE_CREDITS, formatCooldown } from "@/hooks/use-credits";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
