@@ -10,6 +10,13 @@ const projectSchema = z.object({
   token: z.string().min(1).max(1000),
   maxSupply: z.string().max(200).optional().default(""),
   brand: z.string().max(3000).optional().default(""),
+  company: z.string().max(200).optional().default(""),
+  stage: z.string().max(120).optional().default(""),
+  chain: z.string().max(120).optional().default(""),
+  raiseSize: z.string().max(120).optional().default(""),
+  fullName: z.string().max(200).optional().default(""),
+  role: z.string().max(120).optional().default(""),
+  workEmail: z.string().max(200).optional().default(""),
   kind: z.enum(["whitepaper", "social", "deck", "emails", "tokenomics", "calendar", "sentiment"]),
   extra: z.string().max(2000).optional().default(""),
 });
@@ -21,10 +28,26 @@ function getModel() {
 }
 
 const brandPreamble = (b: string) =>
-  b ? `\n\nBRAND VOICE GUIDELINES (must be followed strictly):\n${b}\n` : "";
+  b ? `\n\nBRAND VOICE GUIDELINES (must be followed strictly — apply tone, banned words, key phrases, and identity notes to every sentence):\n${b}\n` : "";
 
-const projectContext = (d: z.infer<typeof projectSchema>) =>
-  `PROJECT: ${d.name}\nMISSION: ${d.mission}\nAUDIENCE: ${d.audience}\nTOKEN DETAILS: ${d.token}${d.maxSupply ? `\nMAX SUPPLY: ${d.maxSupply} (use this exact figure throughout tokenomics, allocations, and emissions — do not invent a different total)` : ""}${brandPreamble(d.brand)}`;
+const projectContext = (d: z.infer<typeof projectSchema>) => `PROJECT BRIEF (use these EXACT facts — never invent a different name, ticker, chain, audience, or supply):
+- Project name: ${d.name}
+- Company: ${d.company || "(not specified)"}
+- Mission: ${d.mission}
+- Target audience: ${d.audience}
+- Token details: ${d.token}
+- Max supply: ${d.maxSupply || "(not specified — propose one and reuse it everywhere)"}
+- Primary chain: ${d.chain || "(not specified)"}
+- Launch stage: ${d.stage || "(not specified)"}
+- Target raise: ${d.raiseSize || "(not specified)"}${brandPreamble(d.brand)}
+
+TAILORING RULES (mandatory):
+- Reference "${d.name}" by name in every section, not "the project" or "our token".
+- Anchor every claim to the mission, audience, token utility, chain, and stage above.
+- Use the audience's vocabulary (${d.audience}) — pick metaphors, KPIs, and CTAs they actually respond to.
+- Numbers (supply, allocations, raise, prices, dates) must be internally consistent across the whole document.
+- NO generic crypto filler ("revolutionary", "disrupting the space", "to the moon", "next-gen Web3 ecosystem"). If a sentence could appear in any other whitepaper, rewrite it.
+- NO placeholders like "[insert]", "TBD", "Lorem ipsum", or "your project here".`;
 
 export const generateContent = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => projectSchema.parse(input))
@@ -42,7 +65,16 @@ export const generateContent = createServerFn({ method: "POST" })
             summary: z.string(),
           }),
         }),
-        prompt: `${ctx}\n\nDesign a realistic tokenomics model. Return STRICT JSON with:\n- "allocations": array of 5-7 objects, each {category: string, percent: number 0-100, vestingMonths: integer}. Percentages must sum to 100.\n- "emissions": array of exactly 24 objects, each {month: integer 1-24, circulating: number in millions}.\n- "summary": 2-3 sentence strategist note.\nReturn only the JSON object, no prose.`,
+        prompt: `${ctx}
+
+Design a tokenomics model SPECIFIC to ${data.name} on ${data.chain || "its chain"} for a ${data.stage || "launch"} targeting ${data.raiseSize || "an undisclosed raise"}.
+
+Return STRICT JSON with:
+- "allocations": 5-7 objects {category, percent (0-100), vestingMonths (int)}. Percentages MUST sum to exactly 100. Categories must reflect ${data.name}'s actual go-to-market (e.g. liquidity, ecosystem incentives matching the audience "${data.audience}", team, treasury, public sale, advisors). Vesting schedules must reflect ${data.stage || "the stage"} — longer cliffs for team, shorter for liquidity.
+- "emissions": exactly 24 monthly points {month: 1-24, circulating: millions}. The month-24 value MUST equal (or be ≤) the project's max supply${data.maxSupply ? ` of ${data.maxSupply}` : ""} in millions. Curve must reflect the vesting schedules in "allocations".
+- "summary": 2-3 sentences naming ${data.name}, the chain, and the strategic logic — NOT generic.
+
+Return only the JSON object.`,
       });
       return { kind: "tokenomics" as const, data: output };
     }
@@ -58,19 +90,105 @@ export const generateContent = createServerFn({ method: "POST" })
             suggestions: z.array(z.string()).max(5),
           }),
         }),
-        prompt: `Analyze sentiment of the following crypto post for investor reception. Identify regulatory/PR risks.\n\nPOST:\n${data.extra}`,
+        prompt: `Analyze sentiment of this ${data.name} post for the audience "${data.audience}". Flag regulatory/PR risks specific to ${data.chain || "the chain"} and ${data.stage || "launch stage"}.\n\nPOST:\n${data.extra}`,
       });
       return { kind: "sentiment" as const, data: output };
     }
 
-    const formatRules = `\n\nFORMATTING RULES (mandatory):\n- Output GitHub-Flavored Markdown only. No code fences around the whole document.\n- Start with a single \`#\` H1 title. Use \`##\` for sections, \`###\` for subsections.\n- Use real Markdown tables (with header row + separator) where data is comparative.\n- Use bullet/numbered lists with consistent indentation. Bold key terms with **...**.\n- Insert blank lines between every heading, paragraph, list, and table.\n- No raw HTML. No placeholder text like "[insert here]" — invent realistic, specific values.\n- Be factually grounded and internally consistent (numbers, dates, percentages must add up).`;
+    const formatRules = `\n\nFORMATTING RULES (mandatory):
+- Output GitHub-Flavored Markdown only. No code fences around the whole document.
+- Start with a single \`#\` H1 title that includes "${data.name}". Use \`##\` for sections, \`###\` for subsections.
+- Use real Markdown tables (header row + separator) wherever data is comparative.
+- Use bullet/numbered lists with consistent indentation. Bold key terms with **...**.
+- Insert blank lines between every heading, paragraph, list, and table.
+- No raw HTML, no emoji-only lines, no "[insert here]" placeholders — every value must be specific to ${data.name}.`;
 
     const prompts: Record<string, string> = {
-      whitepaper: `${ctx}${formatRules}\n\nWrite a professional ICO whitepaper (~1800 words) with these sections in order:\n1. # ${data.name} Whitepaper  \n2. ## Abstract (3-5 sentences)\n3. ## 1. Introduction\n4. ## 2. Problem Statement\n5. ## 3. Solution & Product\n6. ## 4. Technology Architecture\n7. ## 5. Tokenomics — include a Markdown table: Allocation | % | Vesting | Purpose\n8. ## 6. Roadmap — Markdown table: Quarter | Milestone | KPI\n9. ## 7. Team & Advisors (placeholder roles)\n10. ## 8. Risk Factors\n11. ## 9. Legal Disclaimer`,
-      social: `${ctx}${formatRules}\n\nProduce launch-day content with these exact sections:\n# ${data.name} Launch Pack\n## X / Twitter Thread\nNumbered 1/8 through 8/8, each tweet on its own line, ≤ 270 chars, hook → value → CTA.\n## Telegram Announcement\n3-4 short paragraphs with emojis and a clear CTA link placeholder.\n## Discord Community Post\nWith @everyone ping, headline, 3 bullet highlights, and a community question.`,
-      deck: `${ctx}${formatRules}\n\nProduce a 10-slide investor pitch deck. For EACH slide use this exact structure:\n\n### Slide N — Title\n**Headline:** one punchy line\n\n**Key points:**\n- bullet\n- bullet\n- bullet\n\n**Speaker notes:** 2-3 sentences\n\n**Image prompt:** detailed visual brief\n\n---\n\nSlides: 1 Cover, 2 Problem, 3 Solution, 4 Market, 5 Product, 6 Tokenomics, 7 Traction, 8 Roadmap, 9 Team, 10 Ask.`,
-      emails: `${ctx}${formatRules}\n\nProduce three sections:\n## 1. Cold Investor Email\n**Subject:** ...\n**Body:** ...\n## 2. Follow-up Email (Day 5)\n**Subject:** ...\n**Body:** ...\n## 3. Target Investor List\nMarkdown table: Firm/Archetype | Stage | Thesis Fit | Why ${data.name} | Contact Angle — 8 rows of realistic, well-reasoned targets.`,
-      calendar: `${ctx}${formatRules}\n\nProduce a 30-day community engagement calendar.\nReturn ONE Markdown table with these columns and exactly 30 rows:\n\n| Day | Date Offset | Channel | Content Type | Topic | Copy Hook | CTA |\n\nVary channels (X, Telegram, Discord, LinkedIn, Reddit, Medium) and content types (AMA, meme, thread, partnership, dev update, governance). End with a 2-sentence summary below the table.`,
+      whitepaper: `${ctx}${formatRules}
+
+Write a professional whitepaper (~1800 words) for ${data.name} on ${data.chain || "its chain"}. Each section must reference ${data.name}'s actual mission and audience — no generic crypto prose.
+
+Sections in order:
+1. \`# ${data.name} Whitepaper\` (subtitle: one-line positioning derived from the mission)
+2. \`## Abstract\` — 3-5 sentences naming ${data.name}, the problem, the audience "${data.audience}", and the token (${data.token}).
+3. \`## 1. Introduction\` — why ${data.name} now, grounded in market context.
+4. \`## 2. Problem Statement\` — 3 concrete pains felt by ${data.audience}.
+5. \`## 3. Solution & Product\` — ${data.name}'s product surface and core flows.
+6. \`## 4. Technology Architecture\` — modules, ${data.chain || "chain"} choice rationale, security model.
+7. \`## 5. Tokenomics\` — Markdown table \`| Allocation | % | Vesting | Purpose |\` summing to 100%. Max supply: ${data.maxSupply || "propose a credible figure and reuse it"}.
+8. \`## 6. Roadmap\` — Markdown table \`| Quarter | Milestone | KPI |\` covering the next 6 quarters from ${data.stage || "current stage"}.
+9. \`## 7. Team & Advisors\` — 4-6 realistic archetype roles tied to ${data.name}'s needs (no real names; use "Co-founder & CEO — ex-...").
+10. \`## 8. Risk Factors\` — 5 risks specific to ${data.chain || "the chain"}, ${data.audience}, and token utility.
+11. \`## 9. Legal Disclaimer\` — tailored to a ${data.raiseSize || "private/public"} raise.`,
+
+      social: `${ctx}${formatRules}
+
+Produce launch-day content for ${data.name}. Voice MUST match the audience "${data.audience}" and the brand guidelines above.
+
+\`# ${data.name} Launch Pack\`
+
+\`## X / Twitter Thread\`
+Exactly 8 tweets numbered \`1/8\` … \`8/8\`, each on its own line, ≤ 270 chars. Tweet 1 must hook with a stat or contrarian take tied to ${data.name}'s mission. Tweet 8 must CTA to the sale on ${data.chain || "chain"}.
+
+\`## Telegram Announcement\`
+3-4 short paragraphs with relevant emojis (no spam). Mention ${data.name}, the token (${data.token}), and ${data.maxSupply ? `the ${data.maxSupply} cap` : "the supply cap"}. End with a CTA link placeholder \`{{sale_url}}\`.
+
+\`## Discord Community Post\`
+Open with \`@everyone\`, then a punchy headline, then 3 bullets (product, token utility, community perk), then one open question inviting ${data.audience} to reply.`,
+
+      deck: `${ctx}${formatRules}
+
+Produce a 10-slide investor pitch deck for ${data.name}, calibrated for a ${data.raiseSize || "seed/strategic"} round at the ${data.stage || "current"} stage.
+
+For EACH slide use exactly:
+
+\`### Slide N — Title\`
+**Headline:** one punchy line referencing ${data.name}
+
+**Key points:**
+- bullet (concrete, numeric where possible)
+- bullet
+- bullet
+
+**Speaker notes:** 2-3 sentences a founder would actually say.
+
+**Image prompt:** detailed visual brief (style, subject, palette).
+
+---
+
+Slides: 1 Cover, 2 Problem (for ${data.audience}), 3 Solution, 4 Market (size + wedge), 5 Product, 6 Tokenomics (cite max supply${data.maxSupply ? ` ${data.maxSupply}` : ""}), 7 Traction, 8 Roadmap, 9 Team, 10 Ask (state the ${data.raiseSize || "raise"} amount and use-of-funds split).`,
+
+      emails: `${ctx}${formatRules}
+
+Produce three sections, each tailored to ${data.name}'s ${data.stage || "stage"} and ${data.raiseSize || "raise"}:
+
+\`## 1. Cold Investor Email\`
+**Subject:** sharp, curiosity-driven, mentions ${data.name} or the wedge — not "Investment opportunity"
+**Body:** 120-160 words. Open with a referral hook, then 2 sentences on the problem for ${data.audience}, 2 sentences on ${data.name}'s edge on ${data.chain || "chain"}, one traction line, then a soft CTA for a 20-min call.
+
+\`## 2. Follow-up Email (Day 5)\`
+**Subject:** short, adds new info (a milestone, partnership, or metric).
+**Body:** 80-110 words referencing the prior email.
+
+\`## 3. Target Investor List\`
+Markdown table \`| Firm / Archetype | Stage focus | Thesis fit | Why ${data.name} | Contact angle |\` with 8 rows. Each "Why ${data.name}" cell MUST cite a specific reason (portfolio overlap, chain thesis, audience fit) — no generic "interested in Web3".`,
+
+      calendar: `${ctx}${formatRules}
+
+Produce a 30-day community engagement calendar for ${data.name} targeting ${data.audience}.
+
+Return ONE Markdown table with these columns and EXACTLY 30 rows:
+
+\`| Day | Date Offset | Channel | Content Type | Topic | Copy Hook | CTA |\`
+
+- Day = 1..30
+- Date Offset = D+1 .. D+30 from launch
+- Channel cycles through X, Telegram, Discord, LinkedIn, Reddit, Medium (mix at least 5)
+- Content Type cycles through AMA, meme, thread, partnership, dev update, governance vote, tutorial
+- Topic / Copy Hook MUST mention ${data.name}, ${data.token}, ${data.chain || "the chain"}, or the audience — never generic
+- CTA is a concrete verb + link placeholder
+
+Finish with a 2-sentence summary BELOW the table describing the narrative arc across the 30 days.`,
     };
 
 
