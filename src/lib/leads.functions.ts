@@ -65,7 +65,7 @@ export const submitLead = createServerFn({ method: "POST" })
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        from: "Blockzia Leads <leads@blockzia.marketing>",
+        from: "Blockzia Leads <onboarding@resend.dev>",
         to: ["blockziamarketing@gmail.com"],
         reply_to: data.workEmail,
         subject: `New lead: ${data.name} — ${data.fullName}`,
