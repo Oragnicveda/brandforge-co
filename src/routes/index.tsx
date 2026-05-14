@@ -48,39 +48,38 @@ function Dashboard() {
       </header>
 
       <main className="relative max-w-7xl mx-auto px-6 py-10 space-y-8">
-        <section className="space-y-4">
-          <span className="chip chip-primary">2026 · AI Co-Pilot</span>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight max-w-3xl">
-            Launch your token without a 30-person growth team.
+        <section className="space-y-5">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="chip chip-primary"><span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" /> Bull cycle window closing — 2026</span>
+            <span className="chip">87% of tokens fail in their first 90 days</span>
+          </div>
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight max-w-4xl leading-[1.05]">
+            Your competitor launches Tuesday.
+            <span className="block text-muted-foreground/80">You're still waiting on the whitepaper.</span>
           </h1>
-          <p className="text-muted-foreground max-w-2xl">
-            One brand context — every asset on tap. Tokenomics simulations, whitepapers, threads,
-            decks, and investor outreach, generated in seconds and kept on-brand.
+          <p className="text-muted-foreground max-w-2xl text-base md:text-lg leading-relaxed">
+            Every week you spend chasing a copywriter, tokenomics consultant, deck designer, and IR analyst is a week the narrative moves on without you — liquidity dries up, KOLs lose interest, the listing window slips.
+            <span className="block mt-3 text-foreground">
+              Blockzia compresses an <strong>$80k+ agency stack</strong> into one AI co-pilot. Whitepaper, tokenomics, decks, threads, and investor emails — generated from a single brand context, on-brand across every channel, ready to ship in an afternoon.
+            </span>
           </p>
-          <div className="flex flex-wrap gap-3 pt-2">
-            <Button asChild variant="default">
+          <div className="flex flex-wrap gap-3 pt-1">
+            <Button asChild variant="default" size="lg">
               <a href="https://cal.com/blockzia-kher-group/60min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
-                <CalendarCheck className="h-4 w-4" /> Consult an expert
+                <CalendarCheck className="h-4 w-4" /> Claim your launch slot
               </a>
             </Button>
-            <Button asChild variant="secondary">
+            <Button asChild variant="secondary" size="lg">
               <a href="https://blockzia.marketing/" target="_blank" rel="noopener noreferrer">
-                Learn more <ArrowUpRight className="h-4 w-4" />
+                See what's inside <ArrowUpRight className="h-4 w-4" />
               </a>
             </Button>
           </div>
+          <p className="text-xs text-muted-foreground pt-1">No agency retainers · No 6-week timelines · Cancel anytime</p>
         </section>
 
         <section aria-labelledby="benefits-heading" className="space-y-6">
-          <div className="space-y-2">
-            <span className="chip chip-primary">Outcomes for crypto teams</span>
-            <h2 id="benefits-heading" className="text-3xl md:text-4xl font-bold tracking-tight max-w-3xl">
-              What your token launch actually gets out of Blockzia.
-            </h2>
-            <p className="text-muted-foreground max-w-2xl">
-              Concrete, measurable wins — not vague "AI productivity." Each benefit maps to a line item your founders, marketers, or investors already care about.
-            </p>
-          </div>
+          <h2 id="benefits-heading" className="sr-only">Outcomes for crypto teams</h2>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
