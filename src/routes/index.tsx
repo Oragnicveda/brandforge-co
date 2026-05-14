@@ -71,6 +71,40 @@ function Dashboard() {
           </div>
         </section>
 
+        <section aria-labelledby="benefits-heading" className="space-y-6">
+          <div className="space-y-2">
+            <span className="chip chip-primary">Outcomes for crypto teams</span>
+            <h2 id="benefits-heading" className="text-3xl md:text-4xl font-bold tracking-tight max-w-3xl">
+              What your token launch actually gets out of Blockzia.
+            </h2>
+            <p className="text-muted-foreground max-w-2xl">
+              Concrete, measurable wins — not vague "AI productivity." Each benefit maps to a line item your founders, marketers, or investors already care about.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { icon: Clock, metric: "10x faster", title: "Launch in days, not quarters", desc: "Whitepaper, tokenomics, deck, threads, and outreach generated from one brand context — ship a full launch kit in a single afternoon." },
+              { icon: DollarSign, metric: "$80k+ saved", title: "Replace the agency stack", desc: "One co-pilot covers what a copywriter, tokenomics consultant, deck designer, and IR analyst used to bill for — keep treasury runway for product and liquidity." },
+              { icon: Target, metric: "On-brand, every asset", title: "Zero voice drift across channels", desc: "Brand voice, mission, audience, and ticker stay locked across X threads, Telegram, Discord, decks, and investor emails — no rogue community manager copy." },
+              { icon: TrendingUp, metric: "Investor-ready", title: "Pitch decks VCs actually open", desc: "10-slide decks calibrated to your stage and raise size, with speaker notes and a use-of-funds split — built for warm intros, not cold spam." },
+              { icon: FileCheck2, metric: "Audit-friendly", title: "Tokenomics that survive due diligence", desc: "Allocations sum to 100%, vesting matches your stage, and the 24-month emission curve respects your max supply — defensible in any data room." },
+              { icon: Rocket, metric: "7-day launch week", title: "Community calendar that converts", desc: "Crypto-native, channel-specific posts with real CTAs and on-chain links — engineered for points campaigns, AMAs, and listing-day momentum." },
+            ].map(({ icon: Icon, metric, title, desc }) => (
+              <article key={title} className="panel p-5 group hover:border-primary/40 transition-colors">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="h-10 w-10 rounded-lg grid place-items-center" style={{ background: "var(--gradient-violet)" }}>
+                    <Icon className="h-5 w-5 text-background" strokeWidth={2.25} />
+                  </div>
+                  <span className="text-[11px] uppercase tracking-wider text-primary font-semibold">{metric}</span>
+                </div>
+                <h3 className="font-semibold tracking-tight mb-1.5">{title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <PhaseTracker done={{
           setup: isReady,
           tokenomics: false,
