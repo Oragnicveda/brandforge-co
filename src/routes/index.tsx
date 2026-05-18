@@ -54,8 +54,7 @@ function Dashboard() {
             <span className="chip">87% of tokens fail in their first 90 days</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight max-w-4xl leading-[1.05]">
-            Your competitor launches Tuesday.
-            <span className="block text-muted-foreground/80">You're still waiting on the whitepaper.</span>
+            Welcome to the next era of crypto intelligence. 🚀
           </h1>
           <p className="text-muted-foreground max-w-2xl text-base md:text-lg leading-relaxed">
             Every week you spend chasing a copywriter, tokenomics consultant, deck designer, and IR analyst is a week the narrative moves on without you — liquidity dries up, KOLs lose interest, the listing window slips.
