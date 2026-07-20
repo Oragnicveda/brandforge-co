@@ -7,7 +7,7 @@ import { GenerateCard } from "@/components/GenerateCard";
 import { SentimentPanel } from "@/components/SentimentPanel";
 import { CreditsBar } from "@/components/CreditsBar";
 import { useProject } from "@/hooks/use-project";
-import { Lock, ShieldCheck, Hexagon, CalendarCheck, ArrowUpRight, Rocket, Clock, DollarSign, Target, FileCheck2, TrendingUp } from "lucide-react";
+import { Sparkles, ShieldCheck, Hexagon, CalendarCheck, ArrowUpRight, Rocket, Clock, DollarSign, Target, FileCheck2, TrendingUp, Check, Star, Quote, FileText, PieChart, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
