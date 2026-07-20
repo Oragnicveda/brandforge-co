@@ -41,7 +41,7 @@ function Dashboard() {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <CreditsBar />
-            <span className="chip hidden sm:inline-flex"><Lock className="h-3 w-3" /> Private</span>
+            <span className="chip hidden sm:inline-flex"><Sparkles className="h-3 w-3" /> Beta · 20 founding teams</span>
             <span className="chip chip-primary hidden md:inline-flex"><ShieldCheck className="h-3 w-3" /> SOC-ready</span>
           </div>
         </div>
