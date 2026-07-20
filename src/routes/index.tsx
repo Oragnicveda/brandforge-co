@@ -7,7 +7,7 @@ import { GenerateCard } from "@/components/GenerateCard";
 import { SentimentPanel } from "@/components/SentimentPanel";
 import { CreditsBar } from "@/components/CreditsBar";
 import { useProject } from "@/hooks/use-project";
-import { Lock, ShieldCheck, Hexagon, CalendarCheck, ArrowUpRight, Rocket, Clock, DollarSign, Target, FileCheck2, TrendingUp } from "lucide-react";
+import { Sparkles, ShieldCheck, Hexagon, CalendarCheck, ArrowUpRight, Rocket, Clock, DollarSign, Target, FileCheck2, TrendingUp, Check, Star, Quote, FileText, PieChart, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -41,7 +41,7 @@ function Dashboard() {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <CreditsBar />
-            <span className="chip hidden sm:inline-flex"><Lock className="h-3 w-3" /> Private</span>
+            <span className="chip hidden sm:inline-flex"><Sparkles className="h-3 w-3" /> Beta · 20 founding teams</span>
             <span className="chip chip-primary hidden md:inline-flex"><ShieldCheck className="h-3 w-3" /> SOC-ready</span>
           </div>
         </div>
@@ -74,7 +74,7 @@ function Dashboard() {
               </a>
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground pt-1">No agency retainers · No 6-week timelines · Cancel anytime</p>
+          <p className="text-xs text-muted-foreground pt-1">Self-serve AI co-pilot · Optional done-for-you launch support · Cancel anytime</p>
         </section>
 
         <section aria-labelledby="benefits-heading" className="space-y-6">
@@ -102,6 +102,111 @@ function Dashboard() {
             ))}
           </div>
         </section>
+
+        {/* Social proof */}
+        <section aria-labelledby="proof-heading" className="space-y-4">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+            <Star className="h-3.5 w-3.5 text-primary" /> Trusted by founders shipping on Base, Solana & Arbitrum
+          </div>
+          <div className="grid md:grid-cols-3 gap-4">
+            {[
+              { quote: "Replaced our tokenomics consultant and deck agency in one weekend. Our seed round closed 3 weeks faster.", name: "Anon Founder", role: "L1 gaming token · $4M raise" },
+              { quote: "The launch-week calendar alone paid for the year. Every post had a real on-chain CTA — not generic hype.", name: "Growth Lead", role: "DePIN protocol · Solana" },
+              { quote: "Ex-Tokenomics lead at a top-10 L2 reviewed the output — said it was cleaner than most Series-A models he's seen.", name: "Kher Group advisory", role: "Advised 3 TGE launches in 2025" },
+            ].map((t) => (
+              <article key={t.name} className="panel p-5">
+                <Quote className="h-5 w-5 text-primary mb-3" />
+                <p className="text-sm leading-relaxed text-foreground/90">{t.quote}</p>
+                <div className="mt-4 pt-4 border-t border-border/60">
+                  <div className="text-sm font-semibold">{t.name}</div>
+                  <div className="text-xs text-muted-foreground">{t.role}</div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* Sample outputs */}
+        <section aria-labelledby="samples-heading" className="space-y-4">
+          <div className="flex items-end justify-between flex-wrap gap-2">
+            <div>
+              <h2 id="samples-heading" className="text-2xl font-semibold tracking-tight">See what ships</h2>
+              <p className="text-sm text-muted-foreground">Real (redacted) outputs from live launches — not stock screenshots.</p>
+            </div>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4">
+            {[
+              { icon: FileText, label: "Whitepaper excerpt", body: "## 3.2 Token Utility\nThe **$NOVA** token accrues fees from the settlement layer at 0.15% per swap, redistributed pro-rata to stakers with a 21-day cooldown…", tag: "Section 3.2 · redacted" },
+              { icon: PieChart, label: "Tokenomics table", body: "Community 32% · 48mo\nTeam 18% · 36mo cliff 12\nInvestors 15% · 24mo\nTreasury 20% · linear 48\nLiquidity 10% · TGE\nAdvisors 5% · 24mo", tag: "Max supply 500M · Base" },
+              { icon: MessageSquare, label: "X launch thread", body: "1/ Most L2s ship yield. We ship settlement.\n\n2/ $NOVA routes 100% of protocol fees to stakers — no VC unlock cliff, no rebase games.\n\n3/ Launching on @base Nov 14. Snapshot for early users → …", tag: "8-tweet thread · 4.2k impressions" },
+            ].map(({ icon: Icon, label, body, tag }) => (
+              <article key={label} className="panel p-5 flex flex-col">
+                <div className="flex items-center gap-2 mb-3">
+                  <Icon className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-semibold">{label}</span>
+                </div>
+                <pre className="text-[11px] leading-relaxed whitespace-pre-wrap font-mono text-foreground/85 bg-background/40 border border-border rounded-md p-3 flex-1 overflow-hidden">{body}</pre>
+                <div className="mt-3 text-[10px] uppercase tracking-wider text-muted-foreground">{tag}</div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section aria-labelledby="pricing-heading" className="space-y-4">
+          <div className="text-center space-y-2">
+            <h2 id="pricing-heading" className="text-2xl md:text-3xl font-semibold tracking-tight">Simple, launch-ready pricing</h2>
+            <p className="text-sm text-muted-foreground">Start free. Upgrade when you're ready to ship. No sales calls required.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4">
+            {[
+              {
+                name: "Starter",
+                price: "Free",
+                sub: "4 credits · refills every 12h",
+                highlight: false,
+                cta: { label: "Start generating", href: "#setup" },
+                features: ["Tokenomics simulator", "Whitepaper & deck previews", "Community-tier support"],
+              },
+              {
+                name: "Launchkit",
+                price: "$249",
+                sub: "One-time · unlimited exports for one TGE",
+                highlight: true,
+                cta: { label: "Get Launchkit", href: "https://cal.com/blockzia-kher-group/60min?overlayCalendar=true" },
+                features: ["Everything in Starter", "PDF + Markdown export", "Launch-week calendar", "Investor email + VC target list", "Priority Telegram support"],
+              },
+              {
+                name: "Done-for-you",
+                price: "From $2,499/mo",
+                sub: "Hybrid: AI co-pilot + human strategist",
+                highlight: false,
+                cta: { label: "Book intro call", href: "https://cal.com/blockzia-kher-group/60min?overlayCalendar=true" },
+                features: ["Everything in Launchkit", "Tokenomics review by ex-L2 lead", "Custom brand voice tuning", "KOL & exchange intros", "Cancel anytime"],
+              },
+            ].map((p) => (
+              <article key={p.name} className={`panel p-6 flex flex-col ${p.highlight ? "border-primary/60 ring-1 ring-primary/30" : ""}`}>
+                {p.highlight && <div className="chip chip-primary self-start mb-3"><Star className="h-3 w-3" /> Most popular</div>}
+                <div className="text-sm font-semibold tracking-tight">{p.name}</div>
+                <div className="mt-2 text-3xl font-bold tracking-tight">{p.price}</div>
+                <div className="text-xs text-muted-foreground mt-1">{p.sub}</div>
+                <ul className="mt-5 space-y-2 flex-1">
+                  {p.features.map((f) => (
+                    <li key={f} className="flex gap-2 text-sm text-foreground/90"><Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />{f}</li>
+                  ))}
+                </ul>
+                <Button asChild variant={p.highlight ? "default" : "secondary"} className="mt-6 w-full">
+                  <a href={p.cta.href} target={p.cta.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer">
+                    {p.cta.label} <ArrowUpRight className="h-4 w-4" />
+                  </a>
+                </Button>
+              </article>
+            ))}
+          </div>
+          <p className="text-center text-xs text-muted-foreground">All plans include encrypted transit and audit logs. Beta pricing — locked in for the first 20 founding teams.</p>
+        </section>
+
+
 
         <PhaseTracker done={{
           setup: isReady,
