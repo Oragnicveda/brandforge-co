@@ -74,7 +74,7 @@ function Dashboard() {
               </a>
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground pt-1">No agency retainers · No 6-week timelines · Cancel anytime</p>
+          <p className="text-xs text-muted-foreground pt-1">Self-serve AI co-pilot · Optional done-for-you launch support · Cancel anytime</p>
         </section>
 
         <section aria-labelledby="benefits-heading" className="space-y-6">
