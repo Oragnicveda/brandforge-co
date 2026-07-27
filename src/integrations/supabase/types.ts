@@ -277,6 +277,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_valid_lead: {
+        Args: {
+          p_full_name: string
+          p_mission: string
+          p_project_name: string
+          p_work_email: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "legal" | "marketing" | "community"
