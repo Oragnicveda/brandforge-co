@@ -222,7 +222,7 @@ ${data.extra}`,
       });
       result = { kind: "sentiment", content: output };
     } else {
-      await chargeCredits({ kind: data.kind });
+      await deductCredits(supabase, userId, data.kind as CreditKind);
       const { text } = await generateText({
         model,
         prompt: textPrompts(data)[data.kind],
