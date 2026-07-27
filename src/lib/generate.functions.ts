@@ -2,6 +2,9 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText, Output } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { COSTS, chargeCredits } from "@/lib/credits.functions";
+import type { Project } from "@/hooks/use-project";
 
 const projectSchema = z.object({
   name: z.string().min(1).max(120),
