@@ -14,16 +14,272 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      credits: {
+        Row: {
+          balance: number
+          created_at: string
+          exhausted_at: string | null
+          is_paid: boolean
+          next_free_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          exhausted_at?: string | null
+          is_paid?: boolean
+          next_free_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          exhausted_at?: string | null
+          is_paid?: boolean
+          next_free_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      generations: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          kind: string
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          id?: string
+          kind: string
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          kind?: string
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          audience: string | null
+          brand: string | null
+          chain: string | null
+          company: string | null
+          created_at: string
+          full_name: string
+          id: string
+          max_supply: string | null
+          mission: string
+          project_name: string
+          raise_size: string | null
+          role: string | null
+          stage: string | null
+          token: string | null
+          user_id: string | null
+          work_email: string
+        }
+        Insert: {
+          audience?: string | null
+          brand?: string | null
+          chain?: string | null
+          company?: string | null
+          created_at?: string
+          full_name: string
+          id?: string
+          max_supply?: string | null
+          mission: string
+          project_name: string
+          raise_size?: string | null
+          role?: string | null
+          stage?: string | null
+          token?: string | null
+          user_id?: string | null
+          work_email: string
+        }
+        Update: {
+          audience?: string | null
+          brand?: string | null
+          chain?: string | null
+          company?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          max_supply?: string | null
+          mission?: string
+          project_name?: string
+          raise_size?: string | null
+          role?: string | null
+          stage?: string | null
+          token?: string | null
+          user_id?: string | null
+          work_email?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          company: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          role: string | null
+          updated_at: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          role?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          role?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          audience: string | null
+          brand: string | null
+          chain: string | null
+          company: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          max_supply: string | null
+          mission: string
+          name: string
+          raise_size: string | null
+          role: string | null
+          stage: string | null
+          token: string | null
+          updated_at: string
+          user_id: string
+          work_email: string | null
+        }
+        Insert: {
+          audience?: string | null
+          brand?: string | null
+          chain?: string | null
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          max_supply?: string | null
+          mission: string
+          name: string
+          raise_size?: string | null
+          role?: string | null
+          stage?: string | null
+          token?: string | null
+          updated_at?: string
+          user_id: string
+          work_email?: string | null
+        }
+        Update: {
+          audience?: string | null
+          brand?: string | null
+          chain?: string | null
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          max_supply?: string | null
+          mission?: string
+          name?: string
+          raise_size?: string | null
+          role?: string | null
+          stage?: string | null
+          token?: string | null
+          updated_at?: string
+          user_id?: string
+          work_email?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "legal" | "marketing" | "community"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +406,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "legal", "marketing", "community"],
+    },
   },
 } as const
