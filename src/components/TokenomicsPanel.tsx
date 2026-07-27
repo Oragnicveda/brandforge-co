@@ -34,7 +34,7 @@ export function TokenomicsPanel() {
     setLoading(true);
     try {
       const res = await generate({ data: { ...project, kind: "tokenomics" } });
-      if ("data" in res && res.kind === "tokenomics") { setData(res.data as Token); charge("tokenomics"); }
+      if (res.kind === "tokenomics" && typeof res.content === "object" && res.content !== null) { setData(res.content as unknown as Token); }
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Failed");
     } finally { setLoading(false); }

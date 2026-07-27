@@ -21,7 +21,7 @@ export function SentimentPanel() {
     setLoading(true);
     try {
       const res = await generate({ data: { ...project, name: project.name || "x", mission: project.mission || "x", audience: project.audience || "x", token: project.token || "x", kind: "sentiment", extra: post } });
-      if ("data" in res && res.kind === "sentiment") setData(res.data as S);
+      if (res.kind === "sentiment" && typeof res.content === "object" && res.content !== null) setData(res.content as unknown as S);
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Failed");
     } finally { setLoading(false); }

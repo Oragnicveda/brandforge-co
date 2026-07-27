@@ -42,7 +42,7 @@ export function GenerateCard({ kind }: { kind: Kind }) {
     setLoading(true);
     try {
       const res = await generate({ data: { ...project, kind } });
-      if ("text" in res && res.text) { setText(res.text); charge(kind); }
+      if (typeof res.content === "string") { setText(res.content); }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Generation failed";
       toast.error(msg);
