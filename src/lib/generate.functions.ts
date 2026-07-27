@@ -3,7 +3,7 @@ import { generateText, Output } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { chargeCredits } from "@/lib/credits.functions";
+import { deductCredits, type CreditKind } from "@/lib/credits.server";
 import type { Json } from "@/integrations/supabase/types";
 
 const projectSchema = z.object({
