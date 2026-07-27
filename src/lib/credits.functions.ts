@@ -74,7 +74,10 @@ export const chargeCredits = createServerFn({ method: "POST" })
 
     const nextBalance = Math.max(0, balance - cost);
     const nowIso = new Date().toISOString();
-    const update: Record<string, unknown> = { balance: nextBalance, updated_at: nowIso };
+    const update: { balance: number; updated_at: string; exhausted_at?: string | null; next_free_at?: string | null; is_paid?: boolean } = {
+      balance: nextBalance,
+      updated_at: nowIso,
+    };
     if (nextBalance === 0 && !isPaid) {
       update.exhausted_at = nowIso;
       update.next_free_at = new Date(Date.now() + COOLDOWN_MS).toISOString();
