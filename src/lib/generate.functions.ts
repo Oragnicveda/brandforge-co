@@ -4,6 +4,7 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { chargeCredits } from "@/lib/credits.functions";
+import type { Json } from "@/integrations/supabase/types";
 
 const projectSchema = z.object({
   name: z.string().min(1).max(120),
