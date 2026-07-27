@@ -180,7 +180,7 @@ export const generateContent = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     const { userId, supabase } = context;
     const model = getModel();
-    let result: { kind: string; content: unknown };
+    let result: { kind: string; content: Json };
 
     if (data.kind === "tokenomics") {
       const { output } = await generateText({
