@@ -31,26 +31,30 @@ export function ProjectSetup() {
     if (!draft.name || !draft.mission) return toast.error("Project name and mission required");
     setSubmitting(true);
     try {
-      await sendLead({ data: {
-        fullName: draft.fullName,
-        workEmail: draft.workEmail,
-        company: draft.company || "",
-        role: draft.role || "",
-        name: draft.name,
-        stage: draft.stage || "",
-        chain: draft.chain || "",
-        raiseSize: draft.raiseSize || "",
-        audience: draft.audience || "",
-        token: draft.token || "",
-        maxSupply: draft.maxSupply || "",
-        mission: draft.mission,
-        brand: draft.brand || "",
-      }});
-      setProject(draft);
-      toast.success("Lead captured — co-pilot is ready");
+      await setProject(draft);
+      try {
+        await sendLead({ data: {
+          fullName: draft.fullName,
+          workEmail: draft.workEmail,
+          company: draft.company || "",
+          role: draft.role || "",
+          name: draft.name,
+          stage: draft.stage || "",
+          chain: draft.chain || "",
+          raiseSize: draft.raiseSize || "",
+          audience: draft.audience || "",
+          token: draft.token || "",
+          maxSupply: draft.maxSupply || "",
+          mission: draft.mission,
+          brand: draft.brand || "",
+        }});
+      } catch (e) {
+        console.error("lead email failed", e);
+      }
+      toast.success("Project saved — co-pilot is ready");
     } catch (e) {
       console.error(e);
-      toast.error("Could not send lead. Please try again.");
+      toast.error(e instanceof Error ? e.message : "Could not save project. Please try again.");
     } finally {
       setSubmitting(false);
     }
