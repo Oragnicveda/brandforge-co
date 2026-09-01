@@ -154,43 +154,36 @@ function LandingPage() {
             <p className="text-sm text-muted-foreground">Start free. Upgrade when you're ready to ship. No sales calls required.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto">
-            {[
-              {
-                name: "Starter",
-                price: "Free",
-                sub: "4 credits · refills every 12h",
-                highlight: false,
-                cta: { label: "Start generating", to: "/auth" as const },
-                features: ["Tokenomics simulator", "Whitepaper & deck previews", "Community-tier support"],
-              },
-              {
-                name: "Blockzia Labs",
-                price: "Custom",
-                sub: "Tailored launch support for serious teams",
-                highlight: true,
-                cta: { label: "Get in touch", href: "https://cal.com/blockzia-kher-group/60min?overlayCalendar=true" },
-                features: ["Everything in Starter", "Done-for-you launch kit", "Human strategist review", "Tokenomics audit support", "KOL & exchange intros"],
-              },
-            ].map((p) => (
-              <article key={p.name} className={`panel p-6 flex flex-col ${p.highlight ? "border-primary/60 ring-1 ring-primary/30" : ""}`}>
-                {p.highlight && <div className="chip chip-primary self-start mb-3"><Star className="h-3 w-3" /> Best for launches</div>}
-                <div className="text-sm font-semibold tracking-tight">{p.name}</div>
-                <div className="mt-2 text-3xl font-bold tracking-tight">{p.price}</div>
-                <div className="text-xs text-muted-foreground mt-1">{p.sub}</div>
-                <ul className="mt-5 space-y-2 flex-1">
-                  {p.features.map((f) => (
-                    <li key={f} className="flex gap-2 text-sm text-foreground/90"><Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />{f}</li>
-                  ))}
-                </ul>
-                <Button asChild variant={p.highlight ? "default" : "secondary"} className="mt-6 w-full">
-                  {"to" in p.cta ? (
-                    <Link to={p.cta.to}>{p.cta.label} <ArrowUpRight className="h-4 w-4" /></Link>
-                  ) : (
-                    <a href={p.cta.href} target="_blank" rel="noopener noreferrer">{p.cta.label} <ArrowUpRight className="h-4 w-4" /></a>
-                  )}
-                </Button>
-              </article>
-            ))}
+            <article className="panel p-6 flex flex-col">
+              <div className="text-sm font-semibold tracking-tight">Starter</div>
+              <div className="mt-2 text-3xl font-bold tracking-tight">Free</div>
+              <div className="text-xs text-muted-foreground mt-1">4 credits · refills every 12h</div>
+              <ul className="mt-5 space-y-2 flex-1">
+                <li className="flex gap-2 text-sm text-foreground/90"><Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />Tokenomics simulator</li>
+                <li className="flex gap-2 text-sm text-foreground/90"><Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />Whitepaper & deck previews</li>
+                <li className="flex gap-2 text-sm text-foreground/90"><Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />Community-tier support</li>
+              </ul>
+              <Button asChild variant="secondary" className="mt-6 w-full">
+                <Link to="/auth">Start generating <ArrowUpRight className="h-4 w-4" /></Link>
+              </Button>
+            </article>
+
+            <article className="panel p-6 flex flex-col border-primary/60 ring-1 ring-primary/30">
+              <div className="chip chip-primary self-start mb-3"><Star className="h-3 w-3" /> Best for launches</div>
+              <div className="text-sm font-semibold tracking-tight">Blockzia Labs</div>
+              <div className="mt-2 text-3xl font-bold tracking-tight">Custom</div>
+              <div className="text-xs text-muted-foreground mt-1">Tailored launch support for serious teams</div>
+              <ul className="mt-5 space-y-2 flex-1">
+                <li className="flex gap-2 text-sm text-foreground/90"><Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />Everything in Starter</li>
+                <li className="flex gap-2 text-sm text-foreground/90"><Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />Done-for-you launch kit</li>
+                <li className="flex gap-2 text-sm text-foreground/90"><Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />Human strategist review</li>
+                <li className="flex gap-2 text-sm text-foreground/90"><Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />Tokenomics audit support</li>
+                <li className="flex gap-2 text-sm text-foreground/90"><Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />KOL & exchange intros</li>
+              </ul>
+              <Button asChild variant="default" className="mt-6 w-full">
+                <a href="https://cal.com/blockzia-kher-group/60min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">Get in touch <ArrowUpRight className="h-4 w-4" /></a>
+              </Button>
+            </article>
           </div>
           <p className="text-center text-xs text-muted-foreground">All plans include encrypted transit and audit logs. Beta pricing — locked in for the first 20 founding teams.</p>
         </section>
