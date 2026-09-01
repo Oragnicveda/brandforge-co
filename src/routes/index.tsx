@@ -153,7 +153,7 @@ function LandingPage() {
             <h2 id="pricing-heading" className="text-2xl md:text-3xl font-semibold tracking-tight">Simple, launch-ready pricing</h2>
             <p className="text-sm text-muted-foreground">Start free. Upgrade when you're ready to ship. No sales calls required.</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto">
             {[
               {
                 name: "Starter",
@@ -164,24 +164,16 @@ function LandingPage() {
                 features: ["Tokenomics simulator", "Whitepaper & deck previews", "Community-tier support"],
               },
               {
-                name: "Launchkit",
-                price: "$249",
-                sub: "One-time · unlimited exports for one TGE",
+                name: "Blockzia Labs",
+                price: "Custom",
+                sub: "Tailored launch support for serious teams",
                 highlight: true,
-                cta: { label: "Get Launchkit", href: "https://cal.com/blockzia-kher-group/60min?overlayCalendar=true" },
-                features: ["Everything in Starter", "PDF + Markdown export", "Launch-week calendar", "Investor email + VC target list", "Priority Telegram support"],
-              },
-              {
-                name: "Done-for-you",
-                price: "From $2,499/mo",
-                sub: "Hybrid: AI co-pilot + human strategist",
-                highlight: false,
-                cta: { label: "Book intro call", href: "https://cal.com/blockzia-kher-group/60min?overlayCalendar=true" },
-                features: ["Everything in Launchkit", "Tokenomics review by ex-L2 lead", "Custom brand voice tuning", "KOL & exchange intros", "Cancel anytime"],
+                cta: { label: "Get in touch", href: "https://cal.com/blockzia-kher-group/60min?overlayCalendar=true" },
+                features: ["Everything in Starter", "Done-for-you launch kit", "Human strategist review", "Tokenomics audit support", "KOL & exchange intros"],
               },
             ].map((p) => (
               <article key={p.name} className={`panel p-6 flex flex-col ${p.highlight ? "border-primary/60 ring-1 ring-primary/30" : ""}`}>
-                {p.highlight && <div className="chip chip-primary self-start mb-3"><Star className="h-3 w-3" /> Most popular</div>}
+                {p.highlight && <div className="chip chip-primary self-start mb-3"><Star className="h-3 w-3" /> Best for launches</div>}
                 <div className="text-sm font-semibold tracking-tight">{p.name}</div>
                 <div className="mt-2 text-3xl font-bold tracking-tight">{p.price}</div>
                 <div className="text-xs text-muted-foreground mt-1">{p.sub}</div>
@@ -204,7 +196,8 @@ function LandingPage() {
         </section>
 
         <footer className="pt-10 pb-6 text-center text-xs text-muted-foreground">
-          Encrypted in transit · Audit log available · Role-based access enabled
+          <p>© {new Date().getFullYear()} Blockzia Labs. All rights reserved.</p>
+          <p className="mt-1">Encrypted in transit · Audit log available · Role-based access enabled</p>
         </footer>
       </main>
     </div>
