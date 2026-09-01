@@ -19,6 +19,7 @@ const meta: Record<Kind, { title: string; desc: string; cta: string }> = {
   social: { title: "Social Threads", desc: "On-brand X thread, Telegram announcement & Discord post.", cta: "Generate threads" },
   deck: { title: "Pitch Deck", desc: "10-slide investor deck with copy + image prompts.", cta: "Generate deck" },
   emails: { title: "Investor Outreach", desc: "Cold email, follow-up & a curated VC target list.", cta: "Generate outreach" },
+  community: { title: "Community Agent", desc: "7 days of ready-to-post Telegram, Discord, Reddit & X copy engineered to grow your community.", cta: "Generate 7-day plan" },
   calendar: { title: "Launch Week Calendar", desc: "7-day crypto-native launch plan with real channel links, on-chain CTAs & asset checklist.", cta: "Generate week plan" },
 };
 
