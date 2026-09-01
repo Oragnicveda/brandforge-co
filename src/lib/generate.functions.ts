@@ -20,7 +20,7 @@ const projectSchema = z.object({
   fullName: z.string().max(200).optional().default(""),
   role: z.string().max(120).optional().default(""),
   workEmail: z.string().max(200).optional().default(""),
-  kind: z.enum(["whitepaper", "social", "deck", "emails", "tokenomics", "calendar", "sentiment"]),
+  kind: z.enum(["whitepaper", "social", "deck", "emails", "tokenomics", "calendar", "community", "sentiment"]),
   extra: z.string().max(2000).optional().default(""),
   projectId: z.string().uuid().optional(),
 });
@@ -172,6 +172,43 @@ Below the table add:
 
 \`## Asset Checklist\`
 Bullet list of the exact assets the team must prep before Monday (graphics dimensions, AMA host, audit PDF link target, contract address placeholder, etc.) — tailored to ${d.name}'s stage (${d.stage || "launch"}).`,
+
+  community: `${projectContext(d)}${formatRules(d)}
+
+You are ${d.name}'s COMMUNITY GROWTH AGENT. Produce 7 days of ready-to-publish community posts whose single goal is GROWING the ${d.name} community (members, active chatters, retained holders) across Telegram, Discord, Reddit, X and Farcaster. Every post must be fully written and publishable as-is — no briefs, no "share an update" filler.
+
+\`# ${d.name} — 7-Day Community Growth Agent\`
+
+\`## Growth Thesis\`
+3 sentences: where ${d.audience} currently hangs out, which platform is the acquisition engine vs the retention home for ${d.name}, and the one growth loop being run this week.
+
+Then for EACH day output exactly this block (Day 1 → Day 7):
+
+\`### Day N — <Growth objective> (<Primary platform>)\`
+
+**Telegram post:** full copy, 60-120 words, 2-4 tasteful emojis, one clear ask (invite / react / answer), ends with a pinned-message-friendly line.
+
+**Discord post:** full copy for a specific named channel (e.g. \`#alpha-lounge\`, \`#gm\`, \`#governance\`) — include the channel name, a role ping choice (@everyone only when justified), 3 bullets, and one thread-starter question for ${d.audience}.
+
+**Reddit post:** target subreddit (a REAL one that fits ${d.name}, e.g. r/CryptoCurrency, r/CryptoMoonShots, r/ethdev, r/defi, r/solana — pick by relevance and respect their self-promo norms), a title ≤ 300 chars written like a native redditor (no shilling), and a 100-150 word body that leads with value/analysis and mentions ${d.name} only as context.
+
+**X / Farcaster post:** ≤ 270 chars, hook-first, no hashtag spam.
+
+**Growth mechanic:** the specific loop for that day (invite contest, referral code, quest on Galxe, points multiplier, AMA, meme bounty, mod recruitment, holder-only channel unlock) with the exact rule and reward denominated in ${d.token}.
+
+**Real link:** one REAL working URL on a canonical domain, parameterised for ${d.name} where natural (e.g. https://t.me/, https://discord.gg/, https://www.reddit.com/r/<sub>/, https://galxe.com/${d.name.replace(/\s+/g, "")}, https://warpcast.com/~/channel/${d.name.toLowerCase().replace(/\s+/g, "-")}, https://snapshot.org/#/${d.name.toLowerCase().replace(/\s+/g, "-")}.eth, https://dexscreener.com/${(d.chain || "ethereum").toLowerCase()}). Never invent a domain, never use example.com or placeholders.
+
+**Success metric:** one measurable target (e.g. "+120 TG members", "40 new Discord verifications", "300 upvotes / 25 comments").
+
+---
+
+After Day 7 add:
+
+\`## Moderation & Safety Notes\`
+4 bullets on scam-bot defence, verification flow, DM-scam warnings, and tone rules for mods — specific to ${d.chain || "the chain"} and ${d.audience}.
+
+\`## Week KPI Table\`
+Markdown table \`| Day | Platform | Growth mechanic | Target metric | Owner |\` with exactly 7 rows matching the days above.`,
 });
 
 export const generateContent = createServerFn({ method: "POST" })

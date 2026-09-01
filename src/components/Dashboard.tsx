@@ -64,6 +64,7 @@ export default function Dashboard() {
 
         <section className="grid lg:grid-cols-2 gap-6">
           <GenerateCard kind="calendar" />
+          <GenerateCard kind="community" />
           <SentimentPanel />
         </section>
 
