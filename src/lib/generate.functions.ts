@@ -20,7 +20,7 @@ const projectSchema = z.object({
   fullName: z.string().max(200).optional().default(""),
   role: z.string().max(120).optional().default(""),
   workEmail: z.string().max(200).optional().default(""),
-  kind: z.enum(["whitepaper", "social", "deck", "emails", "tokenomics", "calendar", "sentiment"]),
+  kind: z.enum(["whitepaper", "social", "deck", "emails", "tokenomics", "calendar", "community", "sentiment"]),
   extra: z.string().max(2000).optional().default(""),
   projectId: z.string().uuid().optional(),
 });
