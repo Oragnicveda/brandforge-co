@@ -26,7 +26,7 @@ const meta: Record<Kind, { title: string; desc: string; cta: string }> = {
 export function GenerateCard({ kind }: { kind: Kind }) {
   const { project, isReady } = useProject();
   const generate = useServerFn(generateContent);
-  const { canAfford, charge, costs, topUp, isPaid, onCooldown, msUntilFree } = useCredits();
+  const { canAfford, refresh, costs, topUp, isPaid, onCooldown, msUntilFree } = useCredits();
   const [text, setText] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [topUpOpen, setTopUpOpen] = useState(false);
@@ -44,6 +44,7 @@ export function GenerateCard({ kind }: { kind: Kind }) {
     try {
       const res = await generate({ data: { ...project, kind } });
       if (typeof res.content === "string") { setText(res.content); }
+      refresh();
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Generation failed";
       toast.error(msg);

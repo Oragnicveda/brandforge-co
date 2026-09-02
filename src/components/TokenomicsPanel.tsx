@@ -23,7 +23,7 @@ const COLORS = ["oklch(0.78 0.18 155)", "oklch(0.7 0.18 285)", "oklch(0.78 0.15 
 export function TokenomicsPanel() {
   const { project, isReady } = useProject();
   const generate = useServerFn(generateContent);
-  const { canAfford, charge, costs, topUp } = useCredits();
+  const { canAfford, refresh, costs, topUp } = useCredits();
   const [data, setData] = useState<Token | null>(null);
   const [loading, setLoading] = useState(false);
   const [topUpOpen, setTopUpOpen] = useState(false);
@@ -35,6 +35,7 @@ export function TokenomicsPanel() {
     try {
       const res = await generate({ data: { ...project, kind: "tokenomics" } });
       if (res.kind === "tokenomics" && typeof res.content === "object" && res.content !== null) { setData(res.content as unknown as Token); }
+      refresh();
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Failed");
     } finally { setLoading(false); }
