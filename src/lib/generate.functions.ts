@@ -26,15 +26,16 @@ const projectSchema = z.object({
 });
 
 function getModel() {
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) throw new Error("Missing GEMINI_API_KEY");
-  const gemini = createOpenAICompatible({
-    name: "gemini",
-    baseURL: "https://generativelanguage.googleapis.com/v1beta/openai",
+  const key = process.env.OPENROUTER_API_KEY;
+  if (!key) throw new Error("Missing OPENROUTER_API_KEY");
+  const openrouter = createOpenAICompatible({
+    name: "openrouter",
+    baseURL: "https://openrouter.ai/api/v1",
     headers: { Authorization: `Bearer ${key}` },
   });
-  return gemini("gemini-2.5-flash");
+  return openrouter("google/gemini-2.5-flash");
 }
+
 
 const brandPreamble = (b: string) =>
   b ? `\n\nBRAND VOICE GUIDELINES (must be followed strictly — apply tone, banned words, key phrases, and identity notes to every sentence):\n${b}\n` : "";
