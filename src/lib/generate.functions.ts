@@ -89,6 +89,16 @@ const omnirouteFetch: typeof fetch = async (input, init) => {
 function getModels() {
   const models: Array<{ label: string; model: ReturnType<ReturnType<typeof createOpenAICompatible>> }> = [];
 
+  const nvidiaKey = process.env.NVIDIA_API_KEY;
+  if (nvidiaKey) {
+    const nvidia = createOpenAICompatible({
+      name: "nvidia",
+      baseURL: "https://integrate.api.nvidia.com/v1",
+      headers: { Authorization: `Bearer ${nvidiaKey}` },
+    });
+    models.push({ label: "nvidia", model: nvidia("nvidia/nemotron-3-super-120b-a12b") });
+  }
+
   const omniBase = process.env.OMNIROUTE_BASE_URL;
   const omniKey = process.env.OMNIROUTE_API_KEY;
   if (omniBase && omniKey) {
