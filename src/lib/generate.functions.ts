@@ -86,7 +86,9 @@ const omnirouteFetch: typeof fetch = async (input, init) => {
   });
 };
 
-function getModel() {
+function getModels() {
+  const models: Array<{ label: string; model: ReturnType<ReturnType<typeof createOpenAICompatible>> }> = [];
+
   const omniBase = process.env.OMNIROUTE_BASE_URL;
   const omniKey = process.env.OMNIROUTE_API_KEY;
   if (omniBase && omniKey) {
@@ -99,18 +101,50 @@ function getModel() {
       },
       fetch: omnirouteFetch,
     });
-    return omniroute("auto/best-coding");
+    models.push({ label: "omniroute", model: omniroute("auto/best-coding") });
   }
 
-  const key = process.env.OPENROUTER_API_KEY;
-  if (!key) throw new Error("Missing OMNIROUTE_BASE_URL / OPENROUTER_API_KEY");
-  const openrouter = createOpenAICompatible({
-    name: "openrouter",
-    baseURL: "https://openrouter.ai/api/v1",
-    headers: { Authorization: `Bearer ${key}` },
-  });
-  return openrouter("google/gemini-2.5-flash");
+  const orKey = process.env.OPENROUTER_API_KEY;
+  if (orKey) {
+    const openrouter = createOpenAICompatible({
+      name: "openrouter",
+      baseURL: "https://openrouter.ai/api/v1",
+      headers: { Authorization: `Bearer ${orKey}` },
+    });
+    models.push({ label: "openrouter", model: openrouter("google/gemini-2.5-flash") });
+  }
+
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  if (lovableKey) {
+    const lovable = createOpenAICompatible({
+      name: "lovable",
+      baseURL: "https://ai.gateway.lovable.dev/v1",
+      headers: { Authorization: `Bearer ${lovableKey}`, "Lovable-API-Key": lovableKey },
+    });
+    models.push({ label: "lovable", model: lovable("google/gemini-3.7-flash") });
+  }
+
+  if (!models.length) throw new Error("No AI provider configured");
+  return models;
 }
+
+/** Run a generation against each configured provider until one succeeds. */
+async function withFallback<T>(
+  run: (model: ReturnType<ReturnType<typeof createOpenAICompatible>>) => Promise<T>,
+): Promise<T> {
+  const providers = getModels();
+  let lastError: unknown;
+  for (const { label, model } of providers) {
+    try {
+      return await run(model);
+    } catch (err) {
+      lastError = err;
+      console.error(`[generate] provider "${label}" failed, trying next`, err);
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error("All AI providers failed");
+}
+
 
 
 
