@@ -25,7 +25,70 @@ const projectSchema = z.object({
   projectId: z.string().uuid().optional(),
 });
 
-function getModel() {
+// The OmniRoute tunnel answers every request with an SSE stream, even when the
+// client asks for a buffered completion. Collapse that stream back into a normal
+// chat-completion JSON body so non-streaming calls parse correctly.
+const omnirouteFetch: typeof fetch = async (input, init) => {
+  const res = await fetch(input as any, init as any);
+  const ct = res.headers.get("content-type") ?? "";
+  if (!res.ok || !ct.includes("text/event-stream")) return res;
+
+  const raw = await res.text();
+  let content = "";
+  let reasoning = "";
+  let finish = "stop";
+  let usage: unknown = undefined;
+  let id = "omniroute";
+  let model = "omniroute";
+
+  for (const line of raw.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("data:")) continue;
+    const payload = trimmed.slice(5).trim();
+    if (!payload || payload === "[DONE]") continue;
+    try {
+      const chunk = JSON.parse(payload);
+      if (chunk.id) id = chunk.id;
+      if (chunk.model) model = chunk.model;
+      if (chunk.usage) usage = chunk.usage;
+      const choice = chunk.choices?.[0];
+      if (!choice) continue;
+      if (choice.finish_reason) finish = choice.finish_reason;
+      const delta = choice.delta ?? {};
+      if (typeof delta.content === "string") content += delta.content;
+      if (typeof delta.reasoning_content === "string") reasoning += delta.reasoning_content;
+    } catch {
+      // ignore keep-alive / malformed lines
+    }
+  }
+
+  const body = {
+    id,
+    object: "chat.completion",
+    created: Math.floor(Date.now() / 1000),
+    model,
+    choices: [
+      {
+        index: 0,
+        message: {
+          role: "assistant",
+          content: content || reasoning,
+        },
+        finish_reason: finish,
+      },
+    ],
+    ...(usage ? { usage } : {}),
+  };
+
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { "content-type": "application/json" },
+  });
+};
+
+function getModels() {
+  const models: Array<{ label: string; model: ReturnType<ReturnType<typeof createOpenAICompatible>> }> = [];
+
   const omniBase = process.env.OMNIROUTE_BASE_URL;
   const omniKey = process.env.OMNIROUTE_API_KEY;
   if (omniBase && omniKey) {
@@ -36,18 +99,52 @@ function getModel() {
         Authorization: `Bearer ${omniKey}`,
         "ngrok-skip-browser-warning": "1",
       },
+      fetch: omnirouteFetch,
     });
-    return omniroute("auto/best-coding");
+    models.push({ label: "omniroute", model: omniroute("auto/best-coding") });
   }
-  const key = process.env.OPENROUTER_API_KEY;
-  if (!key) throw new Error("Missing OMNIROUTE_BASE_URL / OPENROUTER_API_KEY");
-  const openrouter = createOpenAICompatible({
-    name: "openrouter",
-    baseURL: "https://openrouter.ai/api/v1",
-    headers: { Authorization: `Bearer ${key}` },
-  });
-  return openrouter("google/gemini-2.5-flash");
+
+  const orKey = process.env.OPENROUTER_API_KEY;
+  if (orKey) {
+    const openrouter = createOpenAICompatible({
+      name: "openrouter",
+      baseURL: "https://openrouter.ai/api/v1",
+      headers: { Authorization: `Bearer ${orKey}` },
+    });
+    models.push({ label: "openrouter", model: openrouter("google/gemini-2.5-flash") });
+  }
+
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  if (lovableKey) {
+    const lovable = createOpenAICompatible({
+      name: "lovable",
+      baseURL: "https://ai.gateway.lovable.dev/v1",
+      headers: { Authorization: `Bearer ${lovableKey}`, "Lovable-API-Key": lovableKey },
+    });
+    models.push({ label: "lovable", model: lovable("google/gemini-3.7-flash") });
+  }
+
+  if (!models.length) throw new Error("No AI provider configured");
+  return models;
 }
+
+/** Run a generation against each configured provider until one succeeds. */
+async function withFallback<T>(
+  run: (model: ReturnType<ReturnType<typeof createOpenAICompatible>>) => Promise<T>,
+): Promise<T> {
+  const providers = getModels();
+  let lastError: unknown;
+  for (const { label, model } of providers) {
+    try {
+      return await run(model);
+    } catch (err) {
+      lastError = err;
+      console.error(`[generate] provider "${label}" failed, trying next`, err);
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error("All AI providers failed");
+}
+
 
 
 
@@ -231,20 +328,20 @@ export const generateContent = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => projectSchema.parse(input))
   .handler(async ({ context, data }) => {
     const { userId, supabase } = context;
-    const model = getModel();
     let result: { kind: string; content: Json };
 
     if (data.kind === "tokenomics") {
-      const { output } = await generateText({
-        model,
-        output: Output.object({
-          schema: z.object({
-            allocations: z.array(z.object({ category: z.string(), percent: z.number(), vestingMonths: z.number() })),
-            emissions: z.array(z.object({ month: z.number(), circulating: z.number() })),
-            summary: z.string(),
+      const output = await withFallback(async (model) => {
+        const res = await generateText({
+          model,
+          output: Output.object({
+            schema: z.object({
+              allocations: z.array(z.object({ category: z.string(), percent: z.number(), vestingMonths: z.number() })),
+              emissions: z.array(z.object({ month: z.number(), circulating: z.number() })),
+              summary: z.string(),
+            }),
           }),
-        }),
-        prompt: `${projectContext(data)}
+          prompt: `${projectContext(data)}
 
 Design a tokenomics model SPECIFIC to ${data.name} on ${data.chain || "its chain"} for a ${data.stage || "launch"} targeting ${data.raiseSize || "an undisclosed raise"}.
 
@@ -254,33 +351,40 @@ Return STRICT JSON with:
 - "summary": 2-3 sentences naming ${data.name}, the chain, and the strategic logic — NOT generic.
 
 Return only the JSON object.`,
+        });
+        return res.output;
       });
       result = { kind: "tokenomics", content: output };
     } else if (data.kind === "sentiment") {
-      const { output } = await generateText({
-        model,
-        output: Output.object({
-          schema: z.object({
-            score: z.number().min(-1).max(1),
-            label: z.enum(["bearish", "neutral", "bullish"]),
-            risks: z.array(z.string()).max(5),
-            suggestions: z.array(z.string()).max(5),
+      const output = await withFallback(async (model) => {
+        const res = await generateText({
+          model,
+          output: Output.object({
+            schema: z.object({
+              score: z.number().min(-1).max(1),
+              label: z.enum(["bearish", "neutral", "bullish"]),
+              risks: z.array(z.string()).max(5),
+              suggestions: z.array(z.string()).max(5),
+            }),
           }),
-        }),
-        prompt: `Analyze sentiment of this ${data.name} post for the audience "${data.audience}". Flag regulatory/PR risks specific to ${data.chain || "the chain"} and ${data.stage || "launch stage"}.
+          prompt: `Analyze sentiment of this ${data.name} post for the audience "${data.audience}". Flag regulatory/PR risks specific to ${data.chain || "the chain"} and ${data.stage || "launch stage"}.
 
 POST:
 ${data.extra}`,
+        });
+        return res.output;
       });
       result = { kind: "sentiment", content: output };
     } else {
       await deductCredits(supabase, userId, data.kind as CreditKind);
-      const { text } = await generateText({
-        model,
-        prompt: textPrompts(data)[data.kind],
+      const text = await withFallback(async (model) => {
+        const res = await generateText({ model, prompt: textPrompts(data)[data.kind] });
+        if (!res.text?.trim()) throw new Error("Empty response");
+        return res.text;
       });
       result = { kind: data.kind, content: text };
     }
+
 
     // Save generation snapshot
     let projectId = data.projectId;
