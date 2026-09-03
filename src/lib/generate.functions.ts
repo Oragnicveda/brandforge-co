@@ -26,8 +26,21 @@ const projectSchema = z.object({
 });
 
 function getModel() {
+  const omniBase = process.env.OMNIROUTE_BASE_URL;
+  const omniKey = process.env.OMNIROUTE_API_KEY;
+  if (omniBase && omniKey) {
+    const omniroute = createOpenAICompatible({
+      name: "omniroute",
+      baseURL: omniBase.replace(/\/+$/, ""),
+      headers: {
+        Authorization: `Bearer ${omniKey}`,
+        "ngrok-skip-browser-warning": "1",
+      },
+    });
+    return omniroute("auto/best-coding");
+  }
   const key = process.env.OPENROUTER_API_KEY;
-  if (!key) throw new Error("Missing OPENROUTER_API_KEY");
+  if (!key) throw new Error("Missing OMNIROUTE_BASE_URL / OPENROUTER_API_KEY");
   const openrouter = createOpenAICompatible({
     name: "openrouter",
     baseURL: "https://openrouter.ai/api/v1",
@@ -35,6 +48,7 @@ function getModel() {
   });
   return openrouter("google/gemini-2.5-flash");
 }
+
 
 
 const brandPreamble = (b: string) =>
