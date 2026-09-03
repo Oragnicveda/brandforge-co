@@ -18,7 +18,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "Launch Buddy AI"
+const SITE_NAME = "Blockzia Labs"
 const ROOT_DOMAIN = "blockzialabs.com"
 
 // Sample data for preview mode ONLY (not used in actual email sending).

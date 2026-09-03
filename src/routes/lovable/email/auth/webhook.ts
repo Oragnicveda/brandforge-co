@@ -9,7 +9,7 @@ import { EmailChangeEmail } from '@/lib/email-templates/email-change'
 import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
 // Configuration
-const SITE_NAME = "Launch Buddy AI"
+const SITE_NAME = "Blockzia Labs"
 const SENDER_DOMAIN = "notify.blockzialabs.com"
 const ROOT_DOMAIN = "blockzialabs.com"
 const FROM_DOMAIN = "blockzialabs.com"
