@@ -328,20 +328,20 @@ export const generateContent = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => projectSchema.parse(input))
   .handler(async ({ context, data }) => {
     const { userId, supabase } = context;
-    const model = getModel();
     let result: { kind: string; content: Json };
 
     if (data.kind === "tokenomics") {
-      const { output } = await generateText({
-        model,
-        output: Output.object({
-          schema: z.object({
-            allocations: z.array(z.object({ category: z.string(), percent: z.number(), vestingMonths: z.number() })),
-            emissions: z.array(z.object({ month: z.number(), circulating: z.number() })),
-            summary: z.string(),
+      const output = await withFallback(async (model) => {
+        const res = await generateText({
+          model,
+          output: Output.object({
+            schema: z.object({
+              allocations: z.array(z.object({ category: z.string(), percent: z.number(), vestingMonths: z.number() })),
+              emissions: z.array(z.object({ month: z.number(), circulating: z.number() })),
+              summary: z.string(),
+            }),
           }),
-        }),
-        prompt: `${projectContext(data)}
+          prompt: `${projectContext(data)}
 
 Design a tokenomics model SPECIFIC to ${data.name} on ${data.chain || "its chain"} for a ${data.stage || "launch"} targeting ${data.raiseSize || "an undisclosed raise"}.
 
@@ -351,33 +351,40 @@ Return STRICT JSON with:
 - "summary": 2-3 sentences naming ${data.name}, the chain, and the strategic logic — NOT generic.
 
 Return only the JSON object.`,
+        });
+        return res.output;
       });
       result = { kind: "tokenomics", content: output };
     } else if (data.kind === "sentiment") {
-      const { output } = await generateText({
-        model,
-        output: Output.object({
-          schema: z.object({
-            score: z.number().min(-1).max(1),
-            label: z.enum(["bearish", "neutral", "bullish"]),
-            risks: z.array(z.string()).max(5),
-            suggestions: z.array(z.string()).max(5),
+      const output = await withFallback(async (model) => {
+        const res = await generateText({
+          model,
+          output: Output.object({
+            schema: z.object({
+              score: z.number().min(-1).max(1),
+              label: z.enum(["bearish", "neutral", "bullish"]),
+              risks: z.array(z.string()).max(5),
+              suggestions: z.array(z.string()).max(5),
+            }),
           }),
-        }),
-        prompt: `Analyze sentiment of this ${data.name} post for the audience "${data.audience}". Flag regulatory/PR risks specific to ${data.chain || "the chain"} and ${data.stage || "launch stage"}.
+          prompt: `Analyze sentiment of this ${data.name} post for the audience "${data.audience}". Flag regulatory/PR risks specific to ${data.chain || "the chain"} and ${data.stage || "launch stage"}.
 
 POST:
 ${data.extra}`,
+        });
+        return res.output;
       });
       result = { kind: "sentiment", content: output };
     } else {
       await deductCredits(supabase, userId, data.kind as CreditKind);
-      const { text } = await generateText({
-        model,
-        prompt: textPrompts(data)[data.kind],
+      const text = await withFallback(async (model) => {
+        const res = await generateText({ model, prompt: textPrompts(data)[data.kind] });
+        if (!res.text?.trim()) throw new Error("Empty response");
+        return res.text;
       });
       result = { kind: data.kind, content: text };
     }
+
 
     // Save generation snapshot
     let projectId = data.projectId;
