@@ -388,7 +388,8 @@ ${data.extra}`,
     } else {
       await deductCredits(supabase, userId, data.kind as CreditKind);
       const text = await withFallback(async (model) => {
-        const res = await generateText({ model, prompt: textPrompts(data)[data.kind] });
+        const prompts = textPrompts(data) as Record<string, string>;
+        const res = await generateText({ model, prompt: prompts[data.kind]! });
         if (!res.text?.trim()) throw new Error("Empty response");
         return res.text;
       });
