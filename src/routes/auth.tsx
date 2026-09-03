@@ -136,47 +136,106 @@ function AuthPage() {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">{mode === "signin" ? "Welcome back" : "Create your account"}</h2>
-          <p className="text-sm text-muted-foreground">
-            {mode === "signin" ? "Sign in to continue building your launch kit." : "Get 4 free credits to start generating."}
-          </p>
-        </div>
-
-        <form onSubmit={handleEmail} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        {sentTo ? (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold tracking-tight">
+              {sentKind === "verify" ? "Verify your email" : "Check your inbox"}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {sentKind === "verify"
+                ? "We sent a confirmation link to "
+                : "We sent a password reset link to "}
+              <span className="text-foreground font-medium">{sentTo}</span>.{" "}
+              {sentKind === "verify"
+                ? "Click it to activate your account, then sign in."
+                : "Open it to choose a new password."}
+            </p>
+            <div className="flex gap-2">
+              <Button variant="secondary" className="flex-1" onClick={handleResend} disabled={loading}>
+                {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                Resend email
+              </Button>
+              <Button
+                variant="ghost"
+                className="flex-1"
+                onClick={() => {
+                  setSentTo(null);
+                  setMode("signin");
+                }}
+              >
+                Back to sign in
+              </Button>
+            </div>
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-            {mode === "signin" ? "Sign in" : "Sign up"}
-          </Button>
-        </form>
+        ) : (
+          <>
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold tracking-tight">
+                {mode === "signin" ? "Welcome back" : mode === "signup" ? "Create your account" : "Reset your password"}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {mode === "signin"
+                  ? "Sign in to continue building your launch kit."
+                  : mode === "signup"
+                    ? "Verify your email and get 4 free credits to start generating."
+                    : "Enter your email and we'll send you a reset link."}
+              </p>
+            </div>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
-          <div className="relative flex justify-center text-xs"><span className="bg-card px-2 text-muted-foreground">or</span></div>
-        </div>
+            <form onSubmit={handleEmail} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              </div>
+              {mode !== "forgot" && (
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Password</Label>
+                    {mode === "signin" && (
+                      <button type="button" className="text-xs text-primary hover:underline" onClick={() => setMode("forgot")}>
+                        Forgot password?
+                      </button>
+                    )}
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={8}
+                  />
+                </div>
+              )}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                {mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Send reset link"}
+              </Button>
+            </form>
 
-        <Button variant="secondary" className="w-full" onClick={handleGoogle} disabled={loading}>
-          Continue with Google
-        </Button>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
+              <div className="relative flex justify-center text-xs"><span className="bg-card px-2 text-muted-foreground">or</span></div>
+            </div>
 
-        <p className="text-center text-sm text-muted-foreground">
-          {mode === "signin" ? "Don't have an account?" : "Already have an account?"}{" "}
-          <button
-            type="button"
-            className="text-primary hover:underline font-medium"
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          >
-            {mode === "signin" ? "Sign up" : "Sign in"}
-          </button>
-        </p>
+            <Button variant="secondary" className="w-full" onClick={handleGoogle} disabled={loading}>
+              Continue with Google
+            </Button>
+
+            <p className="text-center text-sm text-muted-foreground">
+              {mode === "signin" ? "Don't have an account?" : "Already have an account?"}{" "}
+              <button
+                type="button"
+                className="text-primary hover:underline font-medium"
+                onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+              >
+                {mode === "signin" ? "Sign up" : "Sign in"}
+              </button>
+            </p>
+          </>
+        )}
+
       </div>
     </div>
   );
