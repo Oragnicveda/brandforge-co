@@ -20,10 +20,12 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sentTo, setSentTo] = useState<string | null>(null);
+  const [sentKind, setSentKind] = useState<"verify" | "reset">("verify");
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -31,17 +33,51 @@ function AuthPage() {
     });
   }, [navigate]);
 
+  const sendVerification = async (target: string) => {
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: target,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (error) throw error;
+  };
+
   const handleEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({ email, password });
+      if (mode === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
         if (error) throw error;
-        toast.success("Check your email for the confirmation link.");
+        setSentKind("reset");
+        setSentTo(email);
+      } else if (mode === "signup") {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+        });
+        if (error) throw error;
+        if (data.session) {
+          navigate({ to: "/app" });
+        } else {
+          setSentKind("verify");
+          setSentTo(email);
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          if (/confirm/i.test(error.message)) {
+            setSentKind("verify");
+            setSentTo(email);
+            toast.error("Please verify your email first — we've sent a new link.");
+            await sendVerification(email).catch(() => {});
+            return;
+          }
+          throw error;
+        }
         navigate({ to: "/app" });
       }
     } catch (err) {
@@ -50,6 +86,26 @@ function AuthPage() {
       setLoading(false);
     }
   };
+
+  const handleResend = async () => {
+    if (!sentTo) return;
+    setLoading(true);
+    try {
+      if (sentKind === "verify") await sendVerification(sentTo);
+      else {
+        const { error } = await supabase.auth.resetPasswordForEmail(sentTo, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+      }
+      toast.success("Email sent again.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not resend email");
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const handleGoogle = async () => {
     setLoading(true);
