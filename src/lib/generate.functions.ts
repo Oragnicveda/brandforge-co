@@ -25,6 +25,67 @@ const projectSchema = z.object({
   projectId: z.string().uuid().optional(),
 });
 
+// The OmniRoute tunnel answers every request with an SSE stream, even when the
+// client asks for a buffered completion. Collapse that stream back into a normal
+// chat-completion JSON body so non-streaming calls parse correctly.
+const omnirouteFetch: typeof fetch = async (input, init) => {
+  const res = await fetch(input as any, init as any);
+  const ct = res.headers.get("content-type") ?? "";
+  if (!res.ok || !ct.includes("text/event-stream")) return res;
+
+  const raw = await res.text();
+  let content = "";
+  let reasoning = "";
+  let finish = "stop";
+  let usage: unknown = undefined;
+  let id = "omniroute";
+  let model = "omniroute";
+
+  for (const line of raw.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("data:")) continue;
+    const payload = trimmed.slice(5).trim();
+    if (!payload || payload === "[DONE]") continue;
+    try {
+      const chunk = JSON.parse(payload);
+      if (chunk.id) id = chunk.id;
+      if (chunk.model) model = chunk.model;
+      if (chunk.usage) usage = chunk.usage;
+      const choice = chunk.choices?.[0];
+      if (!choice) continue;
+      if (choice.finish_reason) finish = choice.finish_reason;
+      const delta = choice.delta ?? {};
+      if (typeof delta.content === "string") content += delta.content;
+      if (typeof delta.reasoning_content === "string") reasoning += delta.reasoning_content;
+    } catch {
+      // ignore keep-alive / malformed lines
+    }
+  }
+
+  const body = {
+    id,
+    object: "chat.completion",
+    created: Math.floor(Date.now() / 1000),
+    model,
+    choices: [
+      {
+        index: 0,
+        message: {
+          role: "assistant",
+          content: content || reasoning,
+        },
+        finish_reason: finish,
+      },
+    ],
+    ...(usage ? { usage } : {}),
+  };
+
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { "content-type": "application/json" },
+  });
+};
+
 function getModel() {
   const omniBase = process.env.OMNIROUTE_BASE_URL;
   const omniKey = process.env.OMNIROUTE_API_KEY;
@@ -36,9 +97,11 @@ function getModel() {
         Authorization: `Bearer ${omniKey}`,
         "ngrok-skip-browser-warning": "1",
       },
+      fetch: omnirouteFetch,
     });
     return omniroute("auto/best-coding");
   }
+
   const key = process.env.OPENROUTER_API_KEY;
   if (!key) throw new Error("Missing OMNIROUTE_BASE_URL / OPENROUTER_API_KEY");
   const openrouter = createOpenAICompatible({
