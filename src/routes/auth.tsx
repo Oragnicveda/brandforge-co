@@ -20,7 +20,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,9 +29,17 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: "/app" });
+      const user = data.user;
+      if (!user) return;
+      if (user.email && !user.email_confirmed_at) {
+        setSentKind("verify");
+        setSentTo(user.email);
+        return;
+      }
+      navigate({ to: "/app" });
     });
   }, [navigate]);
+
 
   const sendVerification = async (target: string) => {
     const { error } = await supabase.auth.resend({
@@ -54,20 +62,16 @@ function AuthPage() {
         setSentKind("reset");
         setSentTo(email);
       } else if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
         });
         if (error) throw error;
-        if (data.session) {
-          navigate({ to: "/app" });
-        } else {
-          setSentKind("verify");
-          setSentTo(email);
-        }
+        setSentKind("verify");
+        setSentTo(email);
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
           if (/confirm/i.test(error.message)) {
             setSentKind("verify");
@@ -78,8 +82,17 @@ function AuthPage() {
           }
           throw error;
         }
+        if (data.user && !data.user.email_confirmed_at) {
+          await supabase.auth.signOut();
+          setSentKind("verify");
+          setSentTo(email);
+          await sendVerification(email).catch(() => {});
+          toast.error("Please verify your email first — we've sent a new link.");
+          return;
+        }
         navigate({ to: "/app" });
       }
+
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Auth failed");
     } finally {
