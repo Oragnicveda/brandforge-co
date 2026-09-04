@@ -20,7 +20,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,9 +29,17 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: "/app" });
+      const user = data.user;
+      if (!user) return;
+      if (user.email && !user.email_confirmed_at) {
+        setSentKind("verify");
+        setSentTo(user.email);
+        return;
+      }
+      navigate({ to: "/app" });
     });
   }, [navigate]);
+
 
   const sendVerification = async (target: string) => {
     const { error } = await supabase.auth.resend({
