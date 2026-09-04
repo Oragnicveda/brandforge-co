@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Hexagon, CalendarCheck, ArrowUpRight, Clock, DollarSign, Target, FileCheck2, TrendingUp, Rocket, Check, Star, Quote, FileText, PieChart, MessageSquare } from "lucide-react";
 
