@@ -62,20 +62,16 @@ function AuthPage() {
         setSentKind("reset");
         setSentTo(email);
       } else if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
         });
         if (error) throw error;
-        if (data.session) {
-          navigate({ to: "/app" });
-        } else {
-          setSentKind("verify");
-          setSentTo(email);
-        }
+        setSentKind("verify");
+        setSentTo(email);
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
           if (/confirm/i.test(error.message)) {
             setSentKind("verify");
@@ -86,8 +82,17 @@ function AuthPage() {
           }
           throw error;
         }
+        if (data.user && !data.user.email_confirmed_at) {
+          await supabase.auth.signOut();
+          setSentKind("verify");
+          setSentTo(email);
+          await sendVerification(email).catch(() => {});
+          toast.error("Please verify your email first — we've sent a new link.");
+          return;
+        }
         navigate({ to: "/app" });
       }
+
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Auth failed");
     } finally {
