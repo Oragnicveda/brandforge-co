@@ -18,7 +18,19 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
+  const navigate = useNavigate();
+
+  // Email confirmation links can land on the site root with the session in the URL hash.
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (/access_token=|type=(signup|recovery|magiclink|invite|email_change)/.test(hash)) {
+      if (/type=recovery/.test(hash)) navigate({ to: "/reset-password" });
+      else navigate({ to: "/auth/callback" });
+    }
+  }, [navigate]);
+
   return (
+
     <div className="min-h-screen relative">
       <div className="absolute inset-x-0 top-0 h-[560px] grid-bg pointer-events-none opacity-40" />
 
