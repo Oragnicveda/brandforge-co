@@ -17,9 +17,14 @@ function AuthCallback() {
         setError(error?.message || "Authentication failed.");
         return;
       }
+      if (data.user.email && !data.user.email_confirmed_at) {
+        setError("Your email is not verified yet. Please open the link we emailed you.");
+        return;
+      }
       navigate({ to: "/app" });
     });
   }, [navigate]);
+
 
   return (
     <div className="min-h-screen grid-bg flex items-center justify-center px-4">
