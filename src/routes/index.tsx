@@ -46,7 +46,8 @@ function LandingPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <span className="chip hidden sm:inline-flex"><Star className="h-3 w-3" /> Beta · 20 founding teams</span>
+            <Link to="/services" className="hidden sm:inline text-sm text-muted-foreground hover:text-foreground transition-colors">Services</Link>
+            <span className="chip hidden md:inline-flex"><Star className="h-3 w-3" /> Beta · 20 founding teams</span>
             <Button asChild size="sm" variant="default">
               <Link to="/auth">Create account</Link>
             </Button>
@@ -203,6 +204,15 @@ function LandingPage() {
         </section>
 
         <footer className="pt-10 pb-6 text-center text-xs text-muted-foreground">
+          <nav className="flex flex-wrap justify-center gap-x-4 gap-y-2 pb-5">
+            <Link to="/services" className="hover:text-foreground transition-colors">All services</Link>
+            <Link to="/services/tokenomics-design" className="hover:text-foreground transition-colors">Tokenomics design</Link>
+            <Link to="/services/whitepaper-writing" className="hover:text-foreground transition-colors">Whitepaper writing</Link>
+            <Link to="/services/ico-marketing" className="hover:text-foreground transition-colors">ICO launch marketing</Link>
+            <Link to="/services/investor-outreach" className="hover:text-foreground transition-colors">Investor outreach</Link>
+            <Link to="/services/community-growth" className="hover:text-foreground transition-colors">Community growth</Link>
+            <Link to="/services/seo-for-crypto" className="hover:text-foreground transition-colors">SEO for crypto</Link>
+          </nav>
           <p>© {new Date().getFullYear()} Blockzia Labs. All rights reserved.</p>
           <p className="mt-1">Encrypted in transit · Audit log available · Role-based access enabled</p>
         </footer>
