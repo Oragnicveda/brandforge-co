@@ -3,7 +3,7 @@ import type { Database } from "@/integrations/supabase/types";
 
 export const FREE_CREDITS = 4;
 export const COOLDOWN_MS = 12 * 60 * 60 * 1000;
-export const COSTS = { tokenomics: 1, whitepaper: 2, social: 2, deck: 2, emails: 2, calendar: 2, community: 2 } as const;
+export const COSTS = { tokenomics: 1, whitepaper: 2, social: 2, deck: 2, emails: 2, calendar: 2, community: 2, seo: 2 } as const;
 export type CreditKind = keyof typeof COSTS;
 
 export async function getOrCreateCredits(

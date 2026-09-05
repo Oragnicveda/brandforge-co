@@ -20,7 +20,7 @@ const projectSchema = z.object({
   fullName: z.string().max(200).optional().default(""),
   role: z.string().max(120).optional().default(""),
   workEmail: z.string().max(200).optional().default(""),
-  kind: z.enum(["whitepaper", "social", "deck", "emails", "tokenomics", "calendar", "community", "sentiment"]),
+  kind: z.enum(["whitepaper", "social", "deck", "emails", "tokenomics", "calendar", "community", "seo", "sentiment"]),
   extra: z.string().max(2000).optional().default(""),
   projectId: z.string().uuid().optional(),
 });
@@ -331,6 +331,53 @@ After Day 7 add:
 
 \`## Week KPI Table\`
 Markdown table \`| Day | Platform | Growth mechanic | Target metric | Owner |\` with exactly 7 rows matching the days above.`,
+
+  seo: `${projectContext(d)}${formatRules(d)}
+
+You are ${d.name}'s senior crypto SEO strategist. Produce a COMPLETE, execution-ready SEO plan for ${d.name} — covering keyword research, technical SEO, on-page, content, off-page, local/AI search and measurement. Everything must be specific to ${d.name}, ${d.token}, ${d.chain || "its chain"} and the audience "${d.audience}". No generic SEO advice, no placeholders.
+
+\`# ${d.name} — Full SEO Plan\`
+
+\`## 1. Executive Summary & SEO Goals\`
+4-6 bullets: current stage (${d.stage || "launch"}), the search opportunity, the 90-day target (traffic, rankings, conversions to ${d.token} sale / waitlist), and the single biggest constraint.
+
+\`## 2. Search Intent & Audience Map\`
+Markdown table \`| Audience segment | Stage of journey | Search intent | Example query | Page that should win it |\` with 6 rows for ${d.audience}.
+
+\`## 3. Keyword Universe (core deliverable)\`
+Four separate tables, each column set: \`| Keyword | Intent | Est. monthly volume | Difficulty (1-100) | Priority (P1-P3) | Target page/URL slug |\`
+- \`### 3.1 Primary / head terms\` — 8 rows (brand + category terms, e.g. "${d.name}", "$${d.token}" style queries).
+- \`### 3.2 Secondary / commercial\` — 10 rows (buy, price, presale, staking, tokenomics, audit, how to buy on ${d.chain || "chain"}).
+- \`### 3.3 Long-tail & question keywords\` — 12 rows written as real questions ${d.audience} type.
+- \`### 3.4 Competitor gap keywords\` — 8 rows, each naming a plausible competing project/category page and the angle to beat it.
+Volumes and difficulty must be realistic estimates and internally consistent; label the column header with "(estimate)".
+
+\`## 4. Keyword Clusters → Site Architecture\`
+Table \`| Cluster | Pillar page | Supporting pages (3) | Internal-link rule |\` with 5 clusters. Include the exact URL slugs.
+
+\`## 5. On-Page Blueprints\`
+For the 5 highest-priority pages give: URL slug, title tag (≤60 chars, with keyword), meta description (≤155 chars), single H1, H2 outline (4-6), target word count, schema type to use, and the primary CTA.
+
+\`## 6. Technical SEO Checklist\`
+Table \`| Item | Why it matters for ${d.name} | Action | Owner | Priority |\` with 12 rows covering Core Web Vitals, mobile, crawl/indexation, XML sitemap, robots.txt, canonicals, hreflang (if relevant), JS rendering of the dApp, HTTPS/security headers, structured data (Organization, FAQ, Product/Token, BreadcrumbList), pagination, and 404/redirect hygiene.
+
+\`## 7. Content Calendar — First 8 Weeks\`
+Table \`| Week | Content title | Format | Target keyword | Search intent | Word count | Distribution channel |\` with exactly 8 rows, titles written as publishable headlines about ${d.name}/${d.chain || "chain"} topics.
+
+\`## 8. Off-Page & Authority Plan\`
+Table \`| Tactic | Target site type (real examples) | Anchor/topic | Expected DR range | Effort |\` with 8 rows — crypto-native only (CoinGecko/CMC listings, DeFiLlama, chain ecosystem pages, dev docs, PR wires, podcasts, Mirror/Medium syndication, GitHub/awesome lists). Name real canonical domains, never invented ones.
+
+\`## 9. AI Search & LLM Visibility (2026)\`
+5 bullets on being cited by AI answer engines: entity/knowledge-graph consistency, llms.txt, FAQ schema, third-party corroboration of ${d.name}'s facts, and structured tokenomics data.
+
+\`## 10. Measurement & KPIs\`
+Table \`| KPI | Baseline assumption | 30-day target | 90-day target | Tool |\` with 8 rows (impressions, non-brand clicks, avg. position for P1 keywords, indexed pages, referring domains, organic conversions, CWV pass rate, AI citations).
+
+\`## 11. 90-Day Roadmap\`
+Table \`| Phase | Weeks | Focus | Deliverables | Success gate |\` with 3 phases.
+
+\`## 12. Risks & Guardrails\`
+5 bullets on crypto-specific SEO risks (YMYL/financial scrutiny, ad-policy limits, thin token pages, spam link vendors, regulatory wording for a ${d.raiseSize || "raise"}).`,
 });
 
 export const generateContent = createServerFn({ method: "POST" })

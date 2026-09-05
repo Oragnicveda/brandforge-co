@@ -20,6 +20,7 @@ const meta: Record<Kind, { title: string; desc: string; cta: string }> = {
   deck: { title: "Pitch Deck", desc: "10-slide investor deck with copy + image prompts.", cta: "Generate deck" },
   emails: { title: "Investor Outreach", desc: "Cold email, follow-up & a curated VC target list.", cta: "Generate outreach" },
   community: { title: "Community Agent", desc: "7 days of ready-to-post Telegram, Discord, Reddit & X copy engineered to grow your community.", cta: "Generate 7-day plan" },
+  seo: { title: "SEO Agent", desc: "Full tailored SEO plan: keyword clusters with volume/difficulty, technical audit, content calendar, backlinks & KPIs.", cta: "Generate SEO plan" },
   calendar: { title: "Launch Week Calendar", desc: "7-day crypto-native launch plan with real channel links, on-chain CTAs & asset checklist.", cta: "Generate week plan" },
 };
 
