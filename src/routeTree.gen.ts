@@ -17,6 +17,12 @@ import { Route as ServicesRouteImport } from './routes/services'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated.app'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
+import { Route as ServicesCommunityGrowthRouteImport } from './routes/services.community-growth'
+import { Route as ServicesIcoMarketingRouteImport } from './routes/services.ico-marketing'
+import { Route as ServicesInvestorOutreachRouteImport } from './routes/services.investor-outreach'
+import { Route as ServicesSeoForCryptoRouteImport } from './routes/services.seo-for-crypto'
+import { Route as ServicesTokenomicsDesignRouteImport } from './routes/services.tokenomics-design'
+import { Route as ServicesWhitepaperWritingRouteImport } from './routes/services.whitepaper-writing'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 
@@ -59,6 +65,39 @@ const ServicesIndexRoute = ServicesIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ServicesRoute,
 } as any)
+const ServicesCommunityGrowthRoute = ServicesCommunityGrowthRouteImport.update({
+  id: '/community-growth',
+  path: '/community-growth',
+  getParentRoute: () => ServicesRoute,
+} as any)
+const ServicesIcoMarketingRoute = ServicesIcoMarketingRouteImport.update({
+  id: '/ico-marketing',
+  path: '/ico-marketing',
+  getParentRoute: () => ServicesRoute,
+} as any)
+const ServicesInvestorOutreachRoute =
+  ServicesInvestorOutreachRouteImport.update({
+    id: '/investor-outreach',
+    path: '/investor-outreach',
+    getParentRoute: () => ServicesRoute,
+  } as any)
+const ServicesSeoForCryptoRoute = ServicesSeoForCryptoRouteImport.update({
+  id: '/seo-for-crypto',
+  path: '/seo-for-crypto',
+  getParentRoute: () => ServicesRoute,
+} as any)
+const ServicesTokenomicsDesignRoute =
+  ServicesTokenomicsDesignRouteImport.update({
+    id: '/tokenomics-design',
+    path: '/tokenomics-design',
+    getParentRoute: () => ServicesRoute,
+  } as any)
+const ServicesWhitepaperWritingRoute =
+  ServicesWhitepaperWritingRouteImport.update({
+    id: '/whitepaper-writing',
+    path: '/whitepaper-writing',
+    getParentRoute: () => ServicesRoute,
+  } as any)
 const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   id: '/lovable/email/auth/preview',
   path: '/lovable/email/auth/preview',
@@ -77,6 +116,12 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRouteWithChildren
   '/app': typeof AuthenticatedAppRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/services/community-growth': typeof ServicesCommunityGrowthRoute
+  '/services/ico-marketing': typeof ServicesIcoMarketingRoute
+  '/services/investor-outreach': typeof ServicesInvestorOutreachRoute
+  '/services/seo-for-crypto': typeof ServicesSeoForCryptoRoute
+  '/services/tokenomics-design': typeof ServicesTokenomicsDesignRoute
+  '/services/whitepaper-writing': typeof ServicesWhitepaperWritingRoute
   '/services/': typeof ServicesIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -87,6 +132,12 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/app': typeof AuthenticatedAppRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/services/community-growth': typeof ServicesCommunityGrowthRoute
+  '/services/ico-marketing': typeof ServicesIcoMarketingRoute
+  '/services/investor-outreach': typeof ServicesInvestorOutreachRoute
+  '/services/seo-for-crypto': typeof ServicesSeoForCryptoRoute
+  '/services/tokenomics-design': typeof ServicesTokenomicsDesignRoute
+  '/services/whitepaper-writing': typeof ServicesWhitepaperWritingRoute
   '/services': typeof ServicesIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -100,6 +151,12 @@ export interface FileRoutesById {
   '/services': typeof ServicesRouteWithChildren
   '/_authenticated/app': typeof AuthenticatedAppRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/services/community-growth': typeof ServicesCommunityGrowthRoute
+  '/services/ico-marketing': typeof ServicesIcoMarketingRoute
+  '/services/investor-outreach': typeof ServicesInvestorOutreachRoute
+  '/services/seo-for-crypto': typeof ServicesSeoForCryptoRoute
+  '/services/tokenomics-design': typeof ServicesTokenomicsDesignRoute
+  '/services/whitepaper-writing': typeof ServicesWhitepaperWritingRoute
   '/services/': typeof ServicesIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -113,6 +170,12 @@ export interface FileRouteTypes {
     | '/services'
     | '/app'
     | '/auth/callback'
+    | '/services/community-growth'
+    | '/services/ico-marketing'
+    | '/services/investor-outreach'
+    | '/services/seo-for-crypto'
+    | '/services/tokenomics-design'
+    | '/services/whitepaper-writing'
     | '/services/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -123,6 +186,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/app'
     | '/auth/callback'
+    | '/services/community-growth'
+    | '/services/ico-marketing'
+    | '/services/investor-outreach'
+    | '/services/seo-for-crypto'
+    | '/services/tokenomics-design'
+    | '/services/whitepaper-writing'
     | '/services'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -135,6 +204,12 @@ export interface FileRouteTypes {
     | '/services'
     | '/_authenticated/app'
     | '/auth/callback'
+    | '/services/community-growth'
+    | '/services/ico-marketing'
+    | '/services/investor-outreach'
+    | '/services/seo-for-crypto'
+    | '/services/tokenomics-design'
+    | '/services/whitepaper-writing'
     | '/services/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -208,6 +283,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesIndexRouteImport
       parentRoute: typeof ServicesRoute
     }
+    '/services/community-growth': {
+      id: '/services/community-growth'
+      path: '/community-growth'
+      fullPath: '/services/community-growth'
+      preLoaderRoute: typeof ServicesCommunityGrowthRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/services/ico-marketing': {
+      id: '/services/ico-marketing'
+      path: '/ico-marketing'
+      fullPath: '/services/ico-marketing'
+      preLoaderRoute: typeof ServicesIcoMarketingRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/services/investor-outreach': {
+      id: '/services/investor-outreach'
+      path: '/investor-outreach'
+      fullPath: '/services/investor-outreach'
+      preLoaderRoute: typeof ServicesInvestorOutreachRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/services/seo-for-crypto': {
+      id: '/services/seo-for-crypto'
+      path: '/seo-for-crypto'
+      fullPath: '/services/seo-for-crypto'
+      preLoaderRoute: typeof ServicesSeoForCryptoRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/services/tokenomics-design': {
+      id: '/services/tokenomics-design'
+      path: '/tokenomics-design'
+      fullPath: '/services/tokenomics-design'
+      preLoaderRoute: typeof ServicesTokenomicsDesignRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/services/whitepaper-writing': {
+      id: '/services/whitepaper-writing'
+      path: '/whitepaper-writing'
+      fullPath: '/services/whitepaper-writing'
+      preLoaderRoute: typeof ServicesWhitepaperWritingRouteImport
+      parentRoute: typeof ServicesRoute
+    }
     '/lovable/email/auth/preview': {
       id: '/lovable/email/auth/preview'
       path: '/lovable/email/auth/preview'
@@ -248,10 +365,22 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface ServicesRouteChildren {
+  ServicesCommunityGrowthRoute: typeof ServicesCommunityGrowthRoute
+  ServicesIcoMarketingRoute: typeof ServicesIcoMarketingRoute
+  ServicesInvestorOutreachRoute: typeof ServicesInvestorOutreachRoute
+  ServicesSeoForCryptoRoute: typeof ServicesSeoForCryptoRoute
+  ServicesTokenomicsDesignRoute: typeof ServicesTokenomicsDesignRoute
+  ServicesWhitepaperWritingRoute: typeof ServicesWhitepaperWritingRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
 }
 
 const ServicesRouteChildren: ServicesRouteChildren = {
+  ServicesCommunityGrowthRoute: ServicesCommunityGrowthRoute,
+  ServicesIcoMarketingRoute: ServicesIcoMarketingRoute,
+  ServicesInvestorOutreachRoute: ServicesInvestorOutreachRoute,
+  ServicesSeoForCryptoRoute: ServicesSeoForCryptoRoute,
+  ServicesTokenomicsDesignRoute: ServicesTokenomicsDesignRoute,
+  ServicesWhitepaperWritingRoute: ServicesWhitepaperWritingRoute,
   ServicesIndexRoute: ServicesIndexRoute,
 }
 
