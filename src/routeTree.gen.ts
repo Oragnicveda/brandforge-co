@@ -15,6 +15,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated.app'
+import { Route as AuthenticatedResultsRouteImport } from './routes/_authenticated.results'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesCommunityGrowthRouteImport } from './routes/services.community-growth'
@@ -53,6 +55,16 @@ const ServicesRoute = ServicesRouteImport.update({
 const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedResultsRoute = AuthenticatedResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
@@ -115,6 +127,8 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRouteWithChildren
   '/app': typeof AuthenticatedAppRoute
+  '/results': typeof AuthenticatedResultsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/services/community-growth': typeof ServicesCommunityGrowthRoute
   '/services/ico-marketing': typeof ServicesIcoMarketingRoute
@@ -131,6 +145,8 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/app': typeof AuthenticatedAppRoute
+  '/results': typeof AuthenticatedResultsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/services/community-growth': typeof ServicesCommunityGrowthRoute
   '/services/ico-marketing': typeof ServicesIcoMarketingRoute
@@ -150,6 +166,8 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRouteWithChildren
   '/_authenticated/app': typeof AuthenticatedAppRoute
+  '/_authenticated/results': typeof AuthenticatedResultsRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/services/community-growth': typeof ServicesCommunityGrowthRoute
   '/services/ico-marketing': typeof ServicesIcoMarketingRoute
@@ -169,6 +187,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/services'
     | '/app'
+    | '/results'
+    | '/settings'
     | '/auth/callback'
     | '/services/community-growth'
     | '/services/ico-marketing'
@@ -185,6 +205,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/app'
+    | '/results'
+    | '/settings'
     | '/auth/callback'
     | '/services/community-growth'
     | '/services/ico-marketing'
@@ -203,6 +225,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/services'
     | '/_authenticated/app'
+    | '/_authenticated/results'
+    | '/_authenticated/settings'
     | '/auth/callback'
     | '/services/community-growth'
     | '/services/ico-marketing'
@@ -267,6 +291,20 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/results': {
+      id: '/_authenticated/results'
+      path: '/results'
+      fullPath: '/results'
+      preLoaderRoute: typeof AuthenticatedResultsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/auth/callback': {
@@ -344,10 +382,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRoute
+  AuthenticatedResultsRoute: typeof AuthenticatedResultsRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAppRoute: AuthenticatedAppRoute,
+  AuthenticatedResultsRoute: AuthenticatedResultsRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
