@@ -5,6 +5,7 @@ import { TokenomicsPanel } from "@/components/TokenomicsPanel";
 import { GenerateCard } from "@/components/GenerateCard";
 import { SentimentPanel } from "@/components/SentimentPanel";
 import { CreditsBar } from "@/components/CreditsBar";
+import { AccountMenu } from "@/components/AccountMenu";
 import { useProject } from "@/hooks/use-project";
 import { Hexagon, Sparkles, ShieldCheck } from "lucide-react";
 
