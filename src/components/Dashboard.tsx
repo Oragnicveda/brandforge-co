@@ -68,6 +68,7 @@ export default function Dashboard() {
           <GenerateCard kind="calendar" />
           <GenerateCard kind="community" />
           <GenerateCard kind="seo" />
+          <GenerateCard kind="growth" />
           <SentimentPanel />
         </section>
 

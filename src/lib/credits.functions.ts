@@ -6,7 +6,7 @@ import { FREE_CREDITS, COOLDOWN_MS, COSTS, getOrCreateCredits, deductCredits, ad
 export { FREE_CREDITS, COOLDOWN_MS, COSTS };
 export type CreditKind = keyof typeof COSTS;
 
-const KindSchema = z.enum(["tokenomics", "whitepaper", "social", "deck", "emails", "calendar"]);
+const KindSchema = z.enum(["tokenomics", "whitepaper", "social", "deck", "emails", "calendar", "community", "seo", "growth"]);
 
 export const getCredits = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])

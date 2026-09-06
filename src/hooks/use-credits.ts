@@ -5,7 +5,7 @@ import { getCredits, topUpCredits } from "@/lib/credits.functions";
 
 export const FREE_CREDITS = 4;
 export const COOLDOWN_MS = 12 * 60 * 60 * 1000; // 12 hours
-export const COSTS = { tokenomics: 1, whitepaper: 2, social: 2, deck: 2, emails: 2, calendar: 2, community: 2, seo: 2 } as const;
+export const COSTS = { tokenomics: 1, whitepaper: 2, social: 2, deck: 2, emails: 2, calendar: 2, community: 2, seo: 2, growth: 2 } as const;
 export type CreditKind = keyof typeof COSTS;
 
 export const creditsQueryKey = ["credits"] as const;

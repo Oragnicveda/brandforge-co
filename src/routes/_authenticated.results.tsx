@@ -33,6 +33,7 @@ const LABELS: Record<string, string> = {
   calendar: "Launch Week Calendar",
   community: "Community Plan",
   seo: "SEO Plan",
+  growth: "Growth Intelligence",
   sentiment: "Sentiment Check",
 };
 
