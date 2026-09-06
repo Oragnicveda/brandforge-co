@@ -335,6 +335,41 @@ After Day 7 add:
 \`## Week KPI Table\`
 Markdown table \`| Day | Platform | Growth mechanic | Target metric | Owner |\` with exactly 7 rows matching the days above.`,
 
+  growth: `${projectContext(d)}${formatRules(d)}
+
+You are ${d.name}'s CRYPTO GROWTH INTELLIGENCE AGENT. Traditional marketing playbooks fail in crypto: incentives get farmed, timing is dictated by market cycles and chain activity, and audiences are segmented by on-chain behaviour, not demographics. Produce a data-driven growth intelligence report for ${d.name} ($${d.token}) on ${d.chain || "its chain"} for the audience "${d.audience}". Everything must be specific, quantified and executable — no generic marketing advice, no placeholders.
+
+\`# ${d.name} — Growth Intelligence Report\`
+
+\`## 1. Why Traditional Tactics Fail Here\`
+5 bullets contrasting a standard SaaS/consumer tactic with what actually works for ${d.audience} in crypto, each naming the failure mechanism (mercenary liquidity, airdrop farming, sybil accounts, bot-inflated Discords, paid-ad bans).
+
+\`## 2. Comparable Project Pattern Analysis\`
+Table \`| Comparable project | Chain / category | Growth play that worked | Mechanism behind it | Result (est.) | What ${d.name} should copy | What to avoid |\` with 6 rows naming real, well-known projects in ${d.chain || "the ecosystem"} or adjacent categories. Estimates must be labelled as estimates.
+
+\`## 3. Extracted Growth Patterns\`
+5 numbered patterns distilled from section 2. Each: pattern name, the precondition that makes it work, the leading indicator that shows it is working, and the failure signature.
+
+\`## 4. Optimal Timing Model\`
+Table \`| Event | Recommended window (week + weekday + UTC hour) | Why this timing | Market/on-chain precondition | Blackout windows | Leading KPI |\` with rows for: airdrop / claim opening, second airdrop tranche, AMA (X Spaces), AMA (Telegram), partnership announcement #1, partnership announcement #2, listing/liquidity event, and governance vote. Timing reasoning must reference ${d.audience} activity, ${d.chain || "chain"} gas/liquidity conditions and crypto news cycles.
+
+\`## 5. Community Segmentation Model\`
+Table \`| Segment | On-chain / behavioural definition (queryable) | Est. share of audience | Motivation | Best incentive | Predicted response rate | Churn/farm risk | Channel |\` with 7 segments (e.g. long-term holders, LP providers, active governance voters, dormant claimers, airdrop farmers, builders/devs, lurkers). Definitions must be written so a data team could query them (wallet age, balance bands, tx counts, contract interactions, holding duration).
+
+\`## 6. Incentive → Segment Response Prediction\`
+Table \`| Incentive | Best-fit segments | Predicted response rate (est.) | Predicted retention at 30 days | Cost per retained holder (est.) | Sybil/farm exposure | Verdict (scale / test / drop) |\` with 8 incentive types (points program, retro airdrop, staking boost, NFT badge, referral multiplier, quest campaign, fee rebate, ambassador stipend).
+
+\`## 7. Automated Audience Segmentation Pipeline\`Numbered 6-step pipeline describing how segments are built and refreshed automatically: data sources (chain indexer, wallet snapshots, Discord/Telegram roles, site analytics), the join key, refresh cadence, scoring formula (write the actual formula with weights), the sybil filter rules, and how segments sync into campaign tooling.
+
+\`## 8. Growth Experiment Backlog\`
+Table \`| # | Hypothesis | Target segment | Incentive/lever | Sample size | Control | Primary metric | MDE | Duration | Priority |\` with exactly 8 rows, ranked. Hypotheses written as "If we X for Y, then Z will improve by N%".
+
+\`## 9. Anti-Farming & Quality Guardrails\`
+6 bullets: sybil clustering, minimum activity gates, vesting/claim decay, wallet-age weighting, per-segment caps, and detection alerts with thresholds.
+
+\`## 10. 90-Day Growth Roadmap & KPIs\`
+Table \`| Phase | Weeks | Experiments running | Segment focus | Primary KPI | Target | Kill criteria |\` with 3 phases, then 4 bullets on the reporting cadence and who owns each number.`,
+
   seo: `${projectContext(d)}${formatRules(d)}
 
 You are ${d.name}'s senior crypto SEO strategist. Produce a COMPLETE, execution-ready SEO plan for ${d.name} — covering keyword research, technical SEO, on-page, content, off-page, local/AI search and measurement. Everything must be specific to ${d.name}, ${d.token}, ${d.chain || "its chain"} and the audience "${d.audience}". No generic SEO advice, no placeholders.
