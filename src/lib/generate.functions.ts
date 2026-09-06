@@ -484,13 +484,21 @@ ${data.extra}`,
       result = { kind: "sentiment", content: output };
     } else {
       await deductCredits(supabase, userId, data.kind as CreditKind);
-      const text = await withFallback(async (model) => {
-        const prompts = textPrompts(data) as Record<string, string>;
-        const res = await generateText({ model, prompt: prompts[data.kind]! });
-        if (!res.text?.trim()) throw new Error("Empty response");
-        return res.text;
-      });
-      result = { kind: data.kind, content: text };
+      const passes = promptPasses(data, data.kind);
+      const sections: string[] = [];
+      for (const prompt of passes) {
+        const part = await withFallback(async (model) => {
+          const res = await generateText({
+            model,
+            prompt,
+            abortSignal: AbortSignal.timeout(80_000),
+          });
+          if (!res.text?.trim()) throw new Error("Empty response");
+          return res.text.trim();
+        });
+        sections.push(part);
+      }
+      result = { kind: data.kind, content: sections.join("\n\n") };
     }
 
 
