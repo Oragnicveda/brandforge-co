@@ -433,6 +433,17 @@ You are continuing an existing Markdown document for ${d.name}. Do NOT repeat th
 
 ${what}`;
 
+  if (kind === "growth") {
+    const g = full.indexOf("`## 6. Incentive");
+    if (g > 0) {
+      return [
+        `${full.slice(0, g)}\n\nStop after section 5. Do NOT output sections 6-10.`,
+        cont(full.slice(g)),
+      ];
+    }
+    return [full];
+  }
+
   if (kind === "seo") {
     const i = full.indexOf("`## 7. Content Calendar");
     if (i < 0) return [full];
