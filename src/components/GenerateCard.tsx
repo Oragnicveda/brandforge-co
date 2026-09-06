@@ -21,6 +21,7 @@ const meta: Record<Kind, { title: string; desc: string; cta: string }> = {
   emails: { title: "Investor Outreach", desc: "Cold email, follow-up & a curated VC target list.", cta: "Generate outreach" },
   community: { title: "Community Agent", desc: "7 days of ready-to-post Telegram, Discord, Reddit & X copy engineered to grow your community.", cta: "Generate 7-day plan" },
   seo: { title: "SEO Agent", desc: "Full tailored SEO plan: keyword clusters with volume/difficulty, technical audit, content calendar, backlinks & KPIs.", cta: "Generate SEO plan" },
+  growth: { title: "Growth Intelligence Agent", desc: "Analyses growth patterns from comparable projects, picks optimal timing for airdrops, AMAs & partnerships, predicts which community segments respond to each incentive, and auto-segments audiences for growth experiments.", cta: "Generate growth plan" },
   calendar: { title: "Launch Week Calendar", desc: "7-day crypto-native launch plan with real channel links, on-chain CTAs & asset checklist.", cta: "Generate week plan" },
 };
 
