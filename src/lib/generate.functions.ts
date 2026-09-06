@@ -135,6 +135,9 @@ function getModels() {
   }
 
   if (!models.length) throw new Error("No AI provider configured");
+  // Fastest / most reliable providers first; the public OmniRoute tunnel last.
+  const order = ["nvidia", "lovable", "openrouter", "omniroute"];
+  models.sort((a, b) => order.indexOf(a.label) - order.indexOf(b.label));
   return models;
 }
 
