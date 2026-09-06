@@ -135,6 +135,9 @@ function getModels() {
   }
 
   if (!models.length) throw new Error("No AI provider configured");
+  // Fastest / most reliable providers first; the public OmniRoute tunnel last.
+  const order = ["nvidia", "lovable", "openrouter", "omniroute"];
+  models.sort((a, b) => order.indexOf(a.label) - order.indexOf(b.label));
   return models;
 }
 
@@ -380,6 +383,53 @@ Table \`| Phase | Weeks | Focus | Deliverables | Success gate |\` with 3 phases.
 5 bullets on crypto-specific SEO risks (YMYL/financial scrutiny, ad-policy limits, thin token pages, spam link vendors, regulatory wording for a ${d.raiseSize || "raise"}).`,
 });
 
+/**
+ * The SEO and Community documents are far too long for one model call — a single
+ * request runs past the request timeout and the user sees a generic failure.
+ * Split those into two sequential passes and stitch the Markdown back together.
+ */
+function promptPasses(d: z.infer<typeof projectSchema>, kind: string): string[] {
+  const full = (textPrompts(d) as Record<string, string>)[kind]!;
+  const head = `${projectContext(d)}${formatRules(d)}`;
+  const cont = (what: string) =>
+    `${head}
+
+You are continuing an existing Markdown document for ${d.name}. Do NOT repeat the H1 title, any earlier section, any intro, or a closing summary. Output ONLY the following, starting directly with its heading:
+
+${what}`;
+
+  if (kind === "seo") {
+    const i = full.indexOf("`## 7. Content Calendar");
+    if (i < 0) return [full];
+    return [
+      `${full.slice(0, i)}\n\nStop after section 6. Do NOT output sections 7-12.`,
+      cont(full.slice(i)),
+    ];
+  }
+
+  if (kind === "community") {
+    const dayStart = full.indexOf("`### Day N");
+    const tailStart = full.indexOf("After Day 7 add:");
+    const blockEnd = full.indexOf("---", dayStart);
+    if (dayStart < 0 || tailStart < 0 || blockEnd < 0) return [full];
+    const block = full.slice(dayStart, blockEnd).trim();
+    const tail = full.slice(tailStart + "After Day 7 add:".length).trim();
+    return [
+      `${full.slice(0, tailStart).replace("(Day 1 → Day 7)", "(Day 1 → Day 4)")}
+Stop after Day 4. Do NOT output the Moderation or KPI sections yet.`,
+      cont(`Day 5, Day 6 and Day 7 — each using EXACTLY this block format:
+
+${block}
+
+Then add:
+
+${tail}`),
+    ];
+  }
+
+  return [full];
+}
+
 export const generateContent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => projectSchema.parse(input))
@@ -434,13 +484,21 @@ ${data.extra}`,
       result = { kind: "sentiment", content: output };
     } else {
       await deductCredits(supabase, userId, data.kind as CreditKind);
-      const text = await withFallback(async (model) => {
-        const prompts = textPrompts(data) as Record<string, string>;
-        const res = await generateText({ model, prompt: prompts[data.kind]! });
-        if (!res.text?.trim()) throw new Error("Empty response");
-        return res.text;
-      });
-      result = { kind: data.kind, content: text };
+      const passes = promptPasses(data, data.kind);
+      const sections: string[] = [];
+      for (const prompt of passes) {
+        const part = await withFallback(async (model) => {
+          const res = await generateText({
+            model,
+            prompt,
+            abortSignal: AbortSignal.timeout(80_000),
+          });
+          if (!res.text?.trim()) throw new Error("Empty response");
+          return res.text.trim();
+        });
+        sections.push(part);
+      }
+      result = { kind: data.kind, content: sections.join("\n\n") };
     }
 
 
