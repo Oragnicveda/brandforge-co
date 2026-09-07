@@ -212,6 +212,7 @@ function LandingPage() {
             <Link to="/services/investor-outreach" className="hover:text-foreground transition-colors">Investor outreach</Link>
             <Link to="/services/community-growth" className="hover:text-foreground transition-colors">Community growth</Link>
             <Link to="/services/seo-for-crypto" className="hover:text-foreground transition-colors">SEO for crypto</Link>
+            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy policy</Link>
           </nav>
           <p>© {new Date().getFullYear()} Blockzia Labs. All rights reserved.</p>
           <p className="mt-1">Encrypted in transit · Audit log available · Role-based access enabled</p>
