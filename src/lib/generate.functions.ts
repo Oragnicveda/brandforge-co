@@ -339,6 +339,11 @@ Markdown table \`| Day | Platform | Growth mechanic | Target metric | Owner |\` 
 
 You are ${d.name}'s CRYPTO GROWTH INTELLIGENCE AGENT. Traditional marketing playbooks fail in crypto: incentives get farmed, timing is dictated by market cycles and chain activity, and audiences are segmented by on-chain behaviour, not demographics. Produce a data-driven growth intelligence report for ${d.name} ($${d.token}) on ${d.chain || "its chain"} for the audience "${d.audience}". Everything must be specific, quantified and executable — no generic marketing advice, no placeholders.
 
+Calibrate the ENTIRE report to these three inputs, and reference them explicitly in every section:
+- Launch stage: ${d.stage || "unspecified — assume public sale prep"}. Timing windows, event sequencing and which experiments are even legal/sensible at this stage must follow from it (pre-seed = private-channel trust building, no public airdrop; private sale = allocation scarcity and vetted-investor AMAs; public sale / IDO prep = claim mechanics, listing timing, liquidity depth; post-launch = retention, emissions cuts, governance activation).
+- Target raise: ${d.raiseSize || "unspecified"}. Every incentive budget, reward pool size, cost-per-retained-holder figure, ambassador stipend and experiment sample size must be sized as a stated % of this raise and must total within it. Show the arithmetic.
+- Brand voice & guidelines: ${d.brand || "no explicit guidelines — infer a confident, technical, non-hyped crypto voice"}. All announcement framing, AMA talking points and incentive names must obey this voice (respect banned words and key phrases if given), and say in one line per section how the voice shapes the wording.${d.maxSupply ? `\n- Max supply: ${d.maxSupply}. Denominate every ${d.token} reward as an absolute amount AND a % of max supply.` : ""}
+
 \`# ${d.name} — Growth Intelligence Report\`
 
 \`## 1. Why Traditional Tactics Fail Here\`
