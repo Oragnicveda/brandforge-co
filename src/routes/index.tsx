@@ -73,7 +73,7 @@ function LandingPage() {
           </p>
           <div className="flex flex-wrap justify-center sm:justify-start gap-3 pt-1">
             <Button asChild variant="default" size="lg">
-              <a href="https://cal.com/blockzia-kher-group/60min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">
+                <a href="https://cal.com/blockzia-labs-hjymzq/60min" target="_blank" rel="noopener noreferrer">
                 <CalendarCheck className="h-4 w-4" /> Claim your launch slot
               </a>
             </Button>
@@ -196,7 +196,7 @@ function LandingPage() {
                 <li className="flex gap-2 text-sm text-foreground/90"><Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />KOL & exchange intros</li>
               </ul>
               <Button asChild variant="default" className="mt-6 w-full">
-                <a href="https://cal.com/blockzia-kher-group/60min?overlayCalendar=true" target="_blank" rel="noopener noreferrer">Get in touch <ArrowUpRight className="h-4 w-4" /></a>
+                <a href="https://cal.com/blockzia-labs-hjymzq/60min" target="_blank" rel="noopener noreferrer">Get in touch <ArrowUpRight className="h-4 w-4" /></a>
               </Button>
             </article>
           </div>

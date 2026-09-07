@@ -3,7 +3,7 @@ import { Hexagon, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 
-const CAL_URL = "https://cal.com/blockzia-kher-group/60min?overlayCalendar=true";
+const CAL_URL = "https://cal.com/blockzia-labs-hjymzq/60min";
 
 /** Shared header/footer chrome for the public marketing + SEO pages. */
 export function PublicShell({ children }: { children: ReactNode }) {
