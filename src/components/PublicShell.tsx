@@ -61,6 +61,12 @@ export function PublicShell({ children }: { children: ReactNode }) {
               <p className="text-xs text-muted-foreground">blockziamarketing@gmail.com</p>
             </div>
           </div>
+          <div>
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">Legal</div>
+            <ul className="mt-3 space-y-1.5">
+              <li><Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">Privacy policy</Link></li>
+            </ul>
+          </div>
         </div>
         <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
           © {new Date().getFullYear()} Blockzia Labs. All rights reserved. · Encrypted in transit · Audit log available
