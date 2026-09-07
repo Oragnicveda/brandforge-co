@@ -3,7 +3,7 @@ import { Hexagon, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 
-const CAL_URL = "https://cal.com/blockzia-kher-group/60min?overlayCalendar=true";
+const CAL_URL = "https://cal.com/blockzia-labs-hjymzq/60min";
 
 /** Shared header/footer chrome for the public marketing + SEO pages. */
 export function PublicShell({ children }: { children: ReactNode }) {
@@ -60,6 +60,12 @@ export function PublicShell({ children }: { children: ReactNode }) {
               </Button>
               <p className="text-xs text-muted-foreground">blockziamarketing@gmail.com</p>
             </div>
+          </div>
+          <div>
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">Legal</div>
+            <ul className="mt-3 space-y-1.5">
+              <li><Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">Privacy policy</Link></li>
+            </ul>
           </div>
         </div>
         <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
