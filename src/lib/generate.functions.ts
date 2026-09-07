@@ -339,6 +339,11 @@ Markdown table \`| Day | Platform | Growth mechanic | Target metric | Owner |\` 
 
 You are ${d.name}'s CRYPTO GROWTH INTELLIGENCE AGENT. Traditional marketing playbooks fail in crypto: incentives get farmed, timing is dictated by market cycles and chain activity, and audiences are segmented by on-chain behaviour, not demographics. Produce a data-driven growth intelligence report for ${d.name} ($${d.token}) on ${d.chain || "its chain"} for the audience "${d.audience}". Everything must be specific, quantified and executable — no generic marketing advice, no placeholders.
 
+Calibrate the ENTIRE report to these three inputs, and reference them explicitly in every section:
+- Launch stage: ${d.stage || "unspecified — assume public sale prep"}. Timing windows, event sequencing and which experiments are even legal/sensible at this stage must follow from it (pre-seed = private-channel trust building, no public airdrop; private sale = allocation scarcity and vetted-investor AMAs; public sale / IDO prep = claim mechanics, listing timing, liquidity depth; post-launch = retention, emissions cuts, governance activation).
+- Target raise: ${d.raiseSize || "unspecified"}. Every incentive budget, reward pool size, cost-per-retained-holder figure, ambassador stipend and experiment sample size must be sized as a stated % of this raise and must total within it. Show the arithmetic.
+- Brand voice & guidelines: ${d.brand || "no explicit guidelines — infer a confident, technical, non-hyped crypto voice"}. All announcement framing, AMA talking points and incentive names must obey this voice (respect banned words and key phrases if given), and say in one line per section how the voice shapes the wording.${d.maxSupply ? `\n- Max supply: ${d.maxSupply}. Denominate every ${d.token} reward as an absolute amount AND a % of max supply.` : ""}
+
 \`# ${d.name} — Growth Intelligence Report\`
 
 \`## 1. Why Traditional Tactics Fail Here\`
@@ -351,24 +356,24 @@ Table \`| Comparable project | Chain / category | Growth play that worked | Mech
 5 numbered patterns distilled from section 2. Each: pattern name, the precondition that makes it work, the leading indicator that shows it is working, and the failure signature.
 
 \`## 4. Optimal Timing Model\`
-Table \`| Event | Recommended window (week + weekday + UTC hour) | Why this timing | Market/on-chain precondition | Blackout windows | Leading KPI |\` with rows for: airdrop / claim opening, second airdrop tranche, AMA (X Spaces), AMA (Telegram), partnership announcement #1, partnership announcement #2, listing/liquidity event, and governance vote. Timing reasoning must reference ${d.audience} activity, ${d.chain || "chain"} gas/liquidity conditions and crypto news cycles.
+Table \`| Event | Recommended window (week + weekday + UTC hour) | Stage fit (${d.stage || "current stage"}) | Why this timing | Market/on-chain precondition | Blackout windows | Budget (% of ${d.raiseSize || "raise"}) | Leading KPI |\` with rows for: airdrop / claim opening, second airdrop tranche, AMA (X Spaces), AMA (Telegram), partnership announcement #1, partnership announcement #2, listing/liquidity event, and governance vote. Anchor week numbers to the ${d.stage || "current"} stage timeline; mark any event that should be deferred to a later stage as "Defer — <stage>". Timing reasoning must reference ${d.audience} activity, ${d.chain || "chain"} gas/liquidity conditions and crypto news cycles. Below the table, write 3 announcement headlines in the brand voice for the two partnership slots and the claim opening.
 
 \`## 5. Community Segmentation Model\`
-Table \`| Segment | On-chain / behavioural definition (queryable) | Est. share of audience | Motivation | Best incentive | Predicted response rate | Churn/farm risk | Channel |\` with 7 segments (e.g. long-term holders, LP providers, active governance voters, dormant claimers, airdrop farmers, builders/devs, lurkers). Definitions must be written so a data team could query them (wallet age, balance bands, tx counts, contract interactions, holding duration).
+Table \`| Segment | On-chain / behavioural definition (queryable) | Est. share of audience | Motivation | Best incentive | Predicted response rate | Churn/farm risk | Channel |\` with 7 segments (e.g. long-term holders, LP providers, active governance voters, dormant claimers, airdrop farmers, builders/devs, lurkers). Definitions must be written so a data team could query them (wallet age, balance bands, tx counts, contract interactions, holding duration). Note which segments barely exist yet at the ${d.stage || "current"} stage and what proxy signal to use instead.
 
 \`## 6. Incentive → Segment Response Prediction\`
-Table \`| Incentive | Best-fit segments | Predicted response rate (est.) | Predicted retention at 30 days | Cost per retained holder (est.) | Sybil/farm exposure | Verdict (scale / test / drop) |\` with 8 incentive types (points program, retro airdrop, staking boost, NFT badge, referral multiplier, quest campaign, fee rebate, ambassador stipend).
+Table \`| Incentive | Best-fit segments | Budget (absolute + % of ${d.raiseSize || "raise"}) | Predicted response rate (est.) | Predicted retention at 30 days | Cost per retained holder (est.) | Sybil/farm exposure | Stage verdict (scale / test / drop / defer) |\` with 8 incentive types (points program, retro airdrop, staking boost, NFT badge, referral multiplier, quest campaign, fee rebate, ambassador stipend). Budgets must sum to a stated total and stay inside the ${d.raiseSize || "raise"} envelope — show the total row. Name each incentive/program in the brand voice.
 
 \`## 7. Automated Audience Segmentation Pipeline\`Numbered 6-step pipeline describing how segments are built and refreshed automatically: data sources (chain indexer, wallet snapshots, Discord/Telegram roles, site analytics), the join key, refresh cadence, scoring formula (write the actual formula with weights), the sybil filter rules, and how segments sync into campaign tooling.
 
 \`## 8. Growth Experiment Backlog\`
-Table \`| # | Hypothesis | Target segment | Incentive/lever | Sample size | Control | Primary metric | MDE | Duration | Priority |\` with exactly 8 rows, ranked. Hypotheses written as "If we X for Y, then Z will improve by N%".
+Table \`| # | Hypothesis | Target segment | Incentive/lever | Budget | Sample size | Control | Primary metric | MDE | Duration | Priority |\` with exactly 8 rows, ranked by fit to the ${d.stage || "current"} stage. Hypotheses written as "If we X for Y, then Z will improve by N%". Sample sizes must be realistic for a ${d.raiseSize || "raise"}-sized community.
 
 \`## 9. Anti-Farming & Quality Guardrails\`
 6 bullets: sybil clustering, minimum activity gates, vesting/claim decay, wallet-age weighting, per-segment caps, and detection alerts with thresholds.
 
 \`## 10. 90-Day Growth Roadmap & KPIs\`
-Table \`| Phase | Weeks | Experiments running | Segment focus | Primary KPI | Target | Kill criteria |\` with 3 phases, then 4 bullets on the reporting cadence and who owns each number.`,
+Table \`| Phase | Weeks | Experiments running | Segment focus | Budget spend (% of ${d.raiseSize || "raise"}) | Primary KPI | Target | Kill criteria |\` with 3 phases sequenced from the ${d.stage || "current"} stage, then 4 bullets on the reporting cadence and who owns each number, plus one closing bullet stating the total growth budget as a % of the ${d.raiseSize || "raise"} and what is held in reserve.`,
 
   seo: `${projectContext(d)}${formatRules(d)}
 
