@@ -48,6 +48,9 @@ function LandingPage() {
           <div className="flex items-center gap-2 shrink-0">
             <Link to="/services" className="hidden sm:inline text-sm text-muted-foreground hover:text-foreground transition-colors">Services</Link>
             <span className="chip hidden md:inline-flex"><Star className="h-3 w-3" /> Beta · 20 founding teams</span>
+            <Button asChild size="sm" variant="ghost">
+              <Link to="/auth">Log in</Link>
+            </Button>
             <Button asChild size="sm" variant="default">
               <Link to="/auth">Create account</Link>
             </Button>
