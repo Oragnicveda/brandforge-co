@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1789234442049,
+      "tag": "0000_lock_project_after_first_report",
+      "breakpoints": true
+    }
+  ]
+}

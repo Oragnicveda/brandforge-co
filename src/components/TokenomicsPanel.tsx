@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { generateContent } from "@/lib/generate.functions";
-import { useProject } from "@/hooks/use-project";
+import { PROJECT_CHANGE_EVENT, useProject } from "@/hooks/use-project";
 import { useCredits } from "@/hooks/use-credits";
 import { TopUpDialog } from "@/components/CreditsBar";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ export function TokenomicsPanel() {
     try {
       const res = await generate({ data: { ...project, kind: "tokenomics" } });
       if (res.kind === "tokenomics" && typeof res.content === "object" && res.content !== null) { setData(res.content as unknown as Token); }
+      window.dispatchEvent(new Event(PROJECT_CHANGE_EVENT));
       refresh();
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Failed");

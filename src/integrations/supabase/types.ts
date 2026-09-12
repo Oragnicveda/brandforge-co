@@ -196,6 +196,7 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          locked_at: string | null
           max_supply: string | null
           mission: string
           name: string
@@ -215,6 +216,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          locked_at?: string | null
           max_supply?: string | null
           mission: string
           name: string
@@ -234,6 +236,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          locked_at?: string | null
           max_supply?: string | null
           mission?: string
           name?: string
@@ -270,6 +273,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_create_project: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

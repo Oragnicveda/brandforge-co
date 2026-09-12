@@ -23,7 +23,7 @@ const empty: Project = {
   audience: "", mission: "", token: "", maxSupply: "", brand: "",
 };
 
-const EVT = "ico-copilot-project-change";
+export const PROJECT_CHANGE_EVENT = "ico-copilot-project-change";
 
 type Row = {
   id: string;
@@ -82,6 +82,8 @@ export function useProject() {
   const [project, setProjectState] = useState<Project>(empty);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
 
   const load = useCallback(async () => {
     const { data: userRes } = await supabase.auth.getUser();
@@ -89,6 +91,8 @@ export function useProject() {
     if (!uid) {
       setProjectState(empty);
       setProjectId(null);
+      setIsLocked(false);
+      setIsCreatingNew(false);
       setLoaded(true);
       return;
     }
@@ -101,20 +105,29 @@ export function useProject() {
       .maybeSingle();
     if (error) console.error("load project", error);
     if (data) {
-      setProjectState(rowToProject(data as Row));
-      setProjectId((data as Row).id);
+      const row = data as Row;
+      const { count } = await supabase
+        .from("generations")
+        .select("id", { count: "exact", head: true })
+        .eq("project_id", row.id)
+        .neq("kind", "sentiment");
+      setProjectState(rowToProject(row));
+      setProjectId(row.id);
+      setIsLocked((count ?? 0) > 0);
     } else {
       setProjectState(empty);
       setProjectId(null);
+      setIsLocked(false);
     }
+    setIsCreatingNew(false);
     setLoaded(true);
   }, []);
 
   useEffect(() => {
     load();
     const sync = () => load();
-    window.addEventListener(EVT, sync);
-    return () => window.removeEventListener(EVT, sync);
+    window.addEventListener(PROJECT_CHANGE_EVENT, sync);
+    return () => window.removeEventListener(PROJECT_CHANGE_EVENT, sync);
   }, [load]);
 
   const save = useCallback(async (p: Project) => {
@@ -122,6 +135,7 @@ export function useProject() {
     const uid = userRes.user?.id;
     if (!uid) throw new Error("Not signed in");
     if (!p.name || !p.mission) throw new Error("Project name and mission required");
+    if (projectId && isLocked) throw new Error("This project is locked after its first report");
 
     const row = projectToRow(p);
     if (projectId) {
@@ -138,14 +152,25 @@ export function useProject() {
       setProjectId(data.id);
       setProjectState(p);
     }
-    window.dispatchEvent(new Event(EVT));
-  }, [projectId]);
+    setIsCreatingNew(false);
+    window.dispatchEvent(new Event(PROJECT_CHANGE_EVENT));
+  }, [isLocked, projectId]);
+
+  const startNewProject = useCallback(() => {
+    setProjectState(empty);
+    setProjectId(null);
+    setIsLocked(false);
+    setIsCreatingNew(true);
+  }, []);
 
   return {
     project,
     setProject: save,
     loaded,
     projectId,
+    isLocked,
+    isCreatingNew,
+    startNewProject,
     isReady: !!project.name && !!project.mission && !!project.workEmail,
   };
 }

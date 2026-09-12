@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { generateContent } from "@/lib/generate.functions";
-import { useProject } from "@/hooks/use-project";
+import { PROJECT_CHANGE_EVENT, useProject } from "@/hooks/use-project";
 import { useCredits, type CreditKind } from "@/hooks/use-credits";
 import { formatCooldown } from "@/hooks/use-credits";
 import { TopUpDialog } from "@/components/CreditsBar";
@@ -46,6 +46,7 @@ export function GenerateCard({ kind }: { kind: Kind }) {
     try {
       const res = await generate({ data: { ...project, kind } });
       if (typeof res.content === "string") { setText(res.content); }
+      window.dispatchEvent(new Event(PROJECT_CHANGE_EVENT));
       refresh();
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Generation failed";

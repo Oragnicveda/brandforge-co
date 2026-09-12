@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
-import { Hexagon, Loader2 } from "lucide-react";
+import { Hexagon, Loader2, LogIn, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth")({
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<"login" | "signup" | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -26,8 +26,8 @@ function AuthPage() {
     });
   }, [navigate]);
 
-  const handleGoogle = async () => {
-    setLoading(true);
+  const handleGoogle = async (intent: "login" | "signup") => {
+    setLoading(intent);
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: `${window.location.origin}/auth/callback`,
@@ -38,7 +38,7 @@ function AuthPage() {
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Google sign-in failed");
     } finally {
-      setLoading(false);
+      setLoading(null);
     }
   };
 
@@ -56,16 +56,27 @@ function AuthPage() {
         </div>
 
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">Welcome</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Welcome to Blockzia</h2>
           <p className="text-sm text-muted-foreground">
-            Sign in with your Google account to start building your launch kit — new accounts get 4 free credits.
+            Log in to your workspace or create a new account with Gmail. New accounts get 4 free credits.
           </p>
         </div>
 
-        <Button variant="secondary" className="w-full" onClick={handleGoogle} disabled={loading}>
-          {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-          Continue with Google
-        </Button>
+        <div className="space-y-3">
+          <Button className="w-full" onClick={() => handleGoogle("login")} disabled={loading !== null}>
+            {loading === "login" ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
+            Log in with Google
+          </Button>
+          <div className="flex items-center gap-3" aria-hidden="true">
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">New to Blockzia?</span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+          <Button variant="secondary" className="w-full" onClick={() => handleGoogle("signup")} disabled={loading !== null}>
+            {loading === "signup" ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+            Create account with Google
+          </Button>
+        </div>
 
         <p className="text-center text-xs text-muted-foreground">
           We only support Google sign-in. Your Gmail address becomes your account.
