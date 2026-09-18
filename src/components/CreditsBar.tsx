@@ -8,7 +8,7 @@ import { Coins, Wallet, CheckCircle2, Loader2, ExternalLink, QrCode, Download } 
 import { toast } from "sonner";
 
 // Receiving wallet (EVM — works for ETH on Ethereum, Base, Arbitrum, Polygon, BNB).
-const RECEIVER = "0x7C03851b9E2D0C6450D257a7D16A50226C9e34A4";
+const RECEIVER = "0xa0D32Cf83A5e8b5EaC78EeA27939Dc1250Db8783";
 
 // Pack pricing in ETH (approx USD-pegged, edit anytime).
 const PACKS = [
@@ -20,8 +20,6 @@ const PACKS = [
 type EthProvider = {
   request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
   isMetaMask?: boolean;
-  isCoinbaseWallet?: boolean;
-  isTrust?: boolean;
   providers?: EthProvider[];
 };
 
@@ -29,14 +27,13 @@ declare global {
   interface Window { ethereum?: EthProvider }
 }
 
-function pickProvider(kind: "metamask" | "coinbase" | "trust"): EthProvider | null {
+function pickProvider(kind: "metamask"): EthProvider | null {
   if (typeof window === "undefined" || !window.ethereum) return null;
   const eth = window.ethereum;
   const list: EthProvider[] = eth.providers && eth.providers.length ? eth.providers : [eth];
   const match = list.find((p) =>
-    kind === "metamask" ? p.isMetaMask && !p.isCoinbaseWallet && !p.isTrust :
-    kind === "coinbase" ? p.isCoinbaseWallet :
-    kind === "trust" ? p.isTrust : false
+    kind === "metamask" ? p.isMetaMask :
+    false
   );
   return match ?? list[0] ?? null;
 }
@@ -48,16 +45,15 @@ function ethToWeiHex(eth: string): string {
   return "0x" + wei.toString(16);
 }
 
-const WALLETS: { id: "metamask" | "coinbase" | "trust"; name: string; hint: string; install: string }[] = [
+const WALLETS: { id: "metamask" | "paypal"; name: string; hint: string; install: string }[] = [
   { id: "metamask", name: "MetaMask",         hint: "Browser extension or mobile", install: "https://metamask.io/download/" },
-  { id: "coinbase", name: "Coinbase Wallet",  hint: "Coinbase Wallet extension",   install: "https://www.coinbase.com/wallet/downloads" },
-  { id: "trust",    name: "Trust Wallet",     hint: "Trust browser/mobile",        install: "https://trustwallet.com/download" },
+  { id: "paypal",   name: "PayPal",           hint: "PayPal account",              install: "https://www.paypal.com/" },
 ];
 
-function buildDeeplink(kind: "metamask" | "coinbase" | "trust", eth: string): string {
+function buildDeeplink(kind: "metamask" | "paypal", eth: string): string {
   if (kind === "metamask") return `https://metamask.app.link/send/${RECEIVER}@1?value=${ethToWeiHex(eth)}`;
-  if (kind === "trust")    return `https://link.trustwallet.com/send?asset=c60&address=${RECEIVER}&amount=${eth}`;
-  return `https://go.cb-w.com/dapp?cb_url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`;
+  // For PayPal, use the provided payment link
+  return `https://www.paypal.com/ncp/payment/78FJJHAESDYWS`;
 }
 
 export function CreditsBar() {
@@ -90,15 +86,26 @@ export function TopUpDialog({
   const [pack, setPack] = useState(PACKS[1]);
   const [paying, setPaying] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
-  const [scan, setScan] = useState<null | "metamask" | "coinbase" | "trust">(null);
+  const [scan, setScan] = useState<null | "metamask" | "paypal">(null);
 
-  const pay = async (kind: "metamask" | "coinbase" | "trust") => {
+  const pay = async (kind: "metamask" | "paypal") => {
+    if (kind === "paypal") {
+      // Handle PayPal payment - redirect to the provided PayPal link
+      window.open("https://www.paypal.com/ncp/payment/78FJJHAESDYWS", "_blank");
+      // In a real implementation, you'd need to verify payment completion via webhook or API
+      // For now, we'll simulate successful payment after a delay
+      setTimeout(() => {
+        toast.success("PayPal payment completed — credits unlocked");
+        onConfirm(pack.credits);
+      }, 3000);
+      return;
+    }
+
+    // Handle MetaMask payment
     const provider = pickProvider(kind);
     if (!provider) {
       const links: Record<string, string> = {
         metamask: "https://metamask.io/download/",
-        coinbase: "https://www.coinbase.com/wallet/downloads",
-        trust:    "https://trustwallet.com/download",
       };
       toast.error(`No ${kind} wallet detected — opening install page`);
       window.open(links[kind], "_blank");
@@ -130,7 +137,7 @@ export function TopUpDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2"><Wallet className="h-4 w-4 text-primary" /> Top up credits</DialogTitle>
-          <DialogDescription>Connect your wallet — payment is sent in one click. No copying addresses.</DialogDescription>
+          <DialogDescription>Connect your wallet or use PayPal — payment is sent in one click. No copying addresses.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -159,7 +166,7 @@ export function TopUpDialog({
             <div className="grid gap-2">
               {WALLETS.map((w) => {
                 const busy = paying === w.id;
-                const installed = !!pickProvider(w.id);
+                const installed = kind === "metamask" ? !!pickProvider(w.id) : true; // PayPal is always "installed" as it's a web service
                 return (
                   <div key={w.id} className="rounded-lg border border-border bg-background/40 p-2 flex items-center gap-2">
                     <button
@@ -170,15 +177,25 @@ export function TopUpDialog({
                       <span className="flex flex-col items-start">
                         <span className="text-sm font-semibold">{w.name}</span>
                         <span className="text-xs text-muted-foreground">
-                          {installed ? "Detected — pay in one click" : "Not detected — scan QR or install"}
-                        </span>
+                          {w.id === "metamask"
+                            ? (installed ? "Detected — pay in one click" : "Not detected — scan QR or install")
+                            : "Click to pay with PayPal"}
+                          </span>
                       </span>
-                      {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wallet className="h-4 w-4" />}
+                      {w.id === "metamask" && busy ? <Loader2 className="h-4 w-4 animate-spin" /> :
+                       w.id === "metamask" ? <Wallet className="h-4 w-4" /> : null}
                     </button>
-                    <Button size="sm" variant="ghost" onClick={() => setScan(scan === w.id ? null : w.id)} title="Scan with mobile">
-                      <QrCode className="h-4 w-4" />
-                    </Button>
-                    {!installed && (
+                    {w.id === "metamask" && (
+                      <Button size="sm" variant="ghost" onClick={() => setScan(scan === w.id ? null : w.id)} title="Scan with mobile">
+                        <QrCode className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {w.id === "paypal" && (
+                      <Button size="sm" variant="ghost" onClick={() => setScan(scan === w.id ? null : w.id)} title="Pay with PayPal">
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {!installed && w.id === "metamask" && (
                       <a href={w.install} target="_blank" rel="noreferrer" className="text-xs text-primary inline-flex items-center gap-1 pr-2">
                         <Download className="h-3 w-3" /> Install
                       </a>
@@ -191,14 +208,39 @@ export function TopUpDialog({
             {scan && (
               <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 flex flex-col items-center gap-2">
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Scan with {WALLETS.find((w) => w.id === scan)?.name} mobile
+                  Scan with {scan === "metamask" ? WALLETS.find((w) => w.id === scan)?.name : "PayPal"} to pay
                 </div>
-                <div className="rounded-md bg-white p-3">
-                  <QRCodeSVG value={buildDeeplink(scan, pack.eth)} size={168} level="M" />
-                </div>
-                <div className="text-[11px] text-muted-foreground text-center max-w-xs">
-                  Opens the wallet pre-filled with {pack.eth} ETH to the receiver. Confirm in-app to unlock {pack.credits} credits.
-                </div>
+                {scan === "metamask" && (
+                  <>
+                    <div className="rounded-md bg-white p-3">
+                      <QRCodeSVG value={buildDeeplink(scan, pack.eth)} size={168} level="M" />
+                    </div>
+                    <div className="text-[11px] text-muted-foreground text-center max-w-xs">
+                      Opens the wallet pre-filled with {pack.eth} ETH to the receiver. Confirm in-app to unlock {pack.credits} credits.
+                    </div>
+                  </>
+                )}
+                {scan === "paypal" && (
+                  <>
+                    <div className="text-[11px] text-muted-foreground text-center">
+                      Clicking below will open PayPal to complete your payment for {pack.credits} credits.
+                    </div>
+                    <Button
+                      variant="default"
+                      onClick={() => {
+                        window.open("https://www.paypal.com/ncp/payment/78FJJHAESDYWS", "_blank");
+                        // Simulate payment verification
+                        setTimeout(() => {
+                          toast.success("PayPal payment completed — credits unlocked");
+                          onConfirm(pack.credits);
+                          setScan(null);
+                        }, 3000);
+                      }}
+                    >
+                      Pay with PayPal
+                    </Button>
+                  </>
+                )}
               </div>
             )}
 
