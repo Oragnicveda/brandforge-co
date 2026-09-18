@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 // Receiving wallet (EVM — works for ETH on Ethereum, Base, Arbitrum, Polygon, BNB).
 const RECEIVER = "0xa0D32Cf83A5e8b5EaC78EeA27939Dc1250Db8783";
+const PAYPAL_PAYMENT_URL = "https://www.paypal.com/ncp/payment/78FJJHAESDYWS";
 
 // Pack pricing in ETH (approx USD-pegged, edit anytime).
 const PACKS = [
@@ -53,7 +54,7 @@ const WALLETS: { id: "metamask" | "paypal"; name: string; hint: string; install:
 function buildDeeplink(kind: "metamask" | "paypal", eth: string): string {
   if (kind === "metamask") return `https://metamask.app.link/send/${RECEIVER}@1?value=${ethToWeiHex(eth)}`;
   // For PayPal, use the provided payment link
-  return `https://www.paypal.com/ncp/payment/78FJJHAESDYWS`;
+  return PAYPAL_PAYMENT_URL;
 }
 
 export function CreditsBar() {
@@ -91,7 +92,7 @@ export function TopUpDialog({
   const pay = async (kind: "metamask" | "paypal") => {
     if (kind === "paypal") {
       // Handle PayPal payment - redirect to the provided PayPal link
-      window.open("https://www.paypal.com/ncp/payment/78FJJHAESDYWS", "_blank");
+      window.open(PAYPAL_PAYMENT_URL, "_blank");
       // In a real implementation, you'd need to verify payment completion via webhook or API
       // For now, we'll simulate successful payment after a delay
       setTimeout(() => {
@@ -228,7 +229,7 @@ export function TopUpDialog({
                     <Button
                       variant="default"
                       onClick={() => {
-                        window.open("https://www.paypal.com/ncp/payment/78FJJHAESDYWS", "_blank");
+                        window.open(PAYPAL_PAYMENT_URL, "_blank");
                         // Simulate payment verification
                         setTimeout(() => {
                           toast.success("PayPal payment completed — credits unlocked");
