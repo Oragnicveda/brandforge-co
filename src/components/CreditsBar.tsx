@@ -167,7 +167,7 @@ export function TopUpDialog({
             <div className="grid gap-2">
               {WALLETS.map((w) => {
                 const busy = paying === w.id;
-                const installed = kind === "metamask" ? !!pickProvider(w.id) : true; // PayPal is always "installed" as it's a web service
+                const installed = w.id === "metamask" ? !!pickProvider("metamask") : true;
                 return (
                   <div key={w.id} className="rounded-lg border border-border bg-background/40 p-2 flex items-center gap-2">
                     <button
